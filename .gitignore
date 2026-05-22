@@ -1,0 +1,82 @@
+# Build and installation
+build/
+build-*/
+install/
+install-*/
+dist/
+_CPack_Packages/
+doc/website/_build/
+
+# Data
+/data/
+/data-*/
+
+# Utilities and metadata
+aggregate_metadata.json
+
+# CI
+ci/
+*.log
+
+# Python
+**/__pycache__
+*.pyc
+
+# Binaries and packages
+*.so
+*.deb
+*.rpm
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+*.tar.7z
+*.pt
+*.pth
+
+# Development environment
+.venv/
+.venv_lint/
+.vscode-server/
+.vscode/
+ngc-cli/
+CTestConfig.cmake
+.ngc
+
+# AI coding assistants
+.cursor/
+CLAUDE.md
+
+# Cache and temporary directories
+.cache/
+.cargo/
+.cupy/
+.cmake/
+.docker/
+.config/
+.local/
+.ros/
+.nv/
+tmp/
+
+# History and user files
+.bash_history
+.python_history
+.wget-hsts
+.viminfo
+.lesshst
+
+# Secrets
+.erlang.cookie
+
+# Licenses
+rti_license.dat
+
+# Holoscan streaming client and server binaries and libraries
+**/holoscan_client_cloud_streaming/
+**/holoscan_server_cloud_streaming/
+
+# CLI update check
+.cli_commit_hash
+
+# Streamlit web GUI
+.streamlit/
