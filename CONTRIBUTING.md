@@ -38,7 +38,7 @@ New to HoloHub? Follow these steps:
 
 ## Introduction
 
-Holoscan Sensor Bridge Hub is a focused slice of the Holohub ecosystem for Sensor Bridge–related applications, operators, and tutorials. Your contributions help developers build low-latency sensor I/O and GPU-resident pipelines on Holoscan.
+Holoscan Sensor Bridge Hub is a focused slice of the Holoscan ecosystem for Sensor Bridge–related applications, operators, and tutorials. Your contributions help developers build low-latency sensor I/O and GPU-resident pipelines on Holoscan.
 
 Whether you're fixing a bug, adding a feature, or sharing a new reference project, this guide (and Holohub's shared tooling) will help you contribute effectively.
 
