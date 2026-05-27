@@ -1,6 +1,6 @@
 # Contributing to Holoscan Sensor Bridge Hub
 
-Welcome to **Holoscan Sensor Bridge Hub** — part of [Holohub](https://github.com/nvidia-holoscan/holohub). This guide covers contributions to this repository: **applications**, **operators**, and **tutorials** for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O.
+Welcome to **Holoscan Sensor Bridge Hub** — part of the NVIDIA Holoscan ecosystem. This guide covers contributions to this repository: **applications**, **operators**, and **tutorials** for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O.
 
 For **workflows**, **benchmarks**, **GXF extensions**, or **Debian packages**, contribute to the main [Holohub repository](https://github.com/nvidia-holoscan/holohub) instead. Shared conventions (metadata, linting, CMake macros) are the same across both repos; see also [Holohub CONTRIBUTING](https://github.com/nvidia-holoscan/holohub/blob/main/CONTRIBUTING.md).
 

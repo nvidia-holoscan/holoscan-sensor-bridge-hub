@@ -1,11 +1,11 @@
 # Holoscan Sensor Bridge Hub
 
-**Part of [Holohub](https://github.com/nvidia-holoscan/holohub)** — a focused collection of reference applications, operators, and tutorials for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O on the Holoscan platform.
+A focused collection of reference applications, operators, and tutorials for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O on the Holoscan platform.
 
 ![Lint](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_lint.yml?branch=main&label=Lint)
 ![Metadata](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_metadata.yml?branch=main&label=Metadata)
 
-This repository uses the same layout, CLI, and contribution conventions as the main [Holohub](https://github.com/nvidia-holoscan/holohub) catalog. It is **not** a replacement for Holohub — it is a Sensor Bridge–specific slice of that ecosystem. For workflows, benchmarks, GXF extensions, Debian packages, and the full component catalog, see [Holohub](https://github.com/nvidia-holoscan/holohub) and [nvidia-holoscan.github.io/holohub](https://nvidia-holoscan.github.io/holohub).
+*note*: For other components in the NVIDIA Holoscan ecosystem, see [Holohub](https://github.com/nvidia-holoscan/holohub) and [nvidia-holoscan.github.io/holohub](https://nvidia-holoscan.github.io/holohub).
 
 ## Table of Contents
 
