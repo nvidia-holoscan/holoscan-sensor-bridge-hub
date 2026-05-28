@@ -1,5 +1,11 @@
 # HoloHub CLI
 
+> This in-tree CLI implementation is retained only as legacy source context on
+> this branch. The top-level `./holohub` entry point now delegates to the
+> standalone [`holoscan-cli`](https://github.com/nvidia-holoscan/holoscan-cli)
+> package. Use `./holohub --help` or the upstream `holoscan-cli` README for the
+> active command surface.
+
 A command-line interface for managing Holoscan-based applications and workflows. Single tool for the full development lifecycle: setup, build, run, test, package, and maintain.
 
 **Design Goals:**

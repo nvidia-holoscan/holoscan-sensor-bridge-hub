@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,63 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Holoscan Sensor Bridge Hub source-project entry point. Delegates to the
+# pinned standalone `holoscan-cli` package and provides repository-specific
+# defaults.
+#
+# Bootstrap:
+#   HOLOSCAN_CLI_VERSION             holoscan-cli==4.3.0a26390596878
+#   HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS --index-url https://test.pypi.org/simple/
+#   HOLOHUB_PYTHON_BIN               Python interpreter override. Defaults to python3.
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${SCRIPT_DIR}" exec python3 "${SCRIPT_DIR}/utilities/cli/holohub.py" "$@"
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
+export HOLOSCAN_CLI_ROOT="${HOLOSCAN_CLI_ROOT:-${SCRIPT_DIR}}"
+export HOLOSCAN_CLI_CMD_NAME="${HOLOSCAN_CLI_CMD_NAME:-${BASH_SOURCE[0]}}"
+export HOLOSCAN_CLI_REPO_PREFIX="${HOLOSCAN_CLI_REPO_PREFIX:-holoscan-sensor-bridge-hub}"
+export HOLOSCAN_CLI_CONTAINER_PREFIX="${HOLOSCAN_CLI_CONTAINER_PREFIX:-holoscan-sensor-bridge-hub}"
+export HOLOSCAN_CLI_WORKSPACE_NAME="${HOLOSCAN_CLI_WORKSPACE_NAME:-holohub}"
+export HOLOSCAN_CLI_HOSTNAME_PREFIX="${HOLOSCAN_CLI_HOSTNAME_PREFIX:-hsb-hub}"
+
+export HOLOSCAN_CLI_DEFAULT_DOCKERFILE="${HOLOSCAN_CLI_DEFAULT_DOCKERFILE:-${SCRIPT_DIR}/Dockerfile}"
+export HOLOSCAN_CLI_SEARCH_PATH="${HOLOSCAN_CLI_SEARCH_PATH:-${SCRIPT_DIR}/applications,${SCRIPT_DIR}/operators,${SCRIPT_DIR}/tutorials}"
+export HOLOSCAN_CLI_BUILD_PARENT_DIR="${HOLOSCAN_CLI_BUILD_PARENT_DIR:-${SCRIPT_DIR}/build}"
+export HOLOSCAN_CLI_DATA_DIR="${HOLOSCAN_CLI_DATA_DIR:-${SCRIPT_DIR}/data}"
+export HOLOSCAN_CLI_CTEST_SCRIPT="${HOLOSCAN_CLI_CTEST_SCRIPT:-${SCRIPT_DIR}/utilities/testing/holohub.container.ctest}"
+export CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE:-Release}"
+
+export HOLOSCAN_CLI_VERSION="holoscan-cli==4.3.0a26390596878"
+export HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS="--index-url https://test.pypi.org/simple/"
+
+PYTHON_BIN="${HOLOHUB_PYTHON_BIN:-python3}"
+unset HOLOSCAN_CLI_SOURCE
+
+if ! "${PYTHON_BIN}" -c "import holoscan_cli" &>/dev/null; then
+    echo "[holoscan-sensor-bridge-hub] installing/upgrading ${HOLOSCAN_CLI_VERSION}" >&2
+    # shellcheck disable=SC2086 # Intentional word splitting for pip flag list.
+    "${PYTHON_BIN}" -m pip install --upgrade ${HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS} "${HOLOSCAN_CLI_VERSION}"
+fi
+
+_holohub_shquote() {
+    printf "'%s'" "${1//\'/\'\\\'\'}"
+}
+
+_holohub_extend_default_build_args() {
+    local extra=""
+
+    extra+=" --build-arg $(_holohub_shquote "HOLOSCAN_CLI_INSTALL_SPEC=${HOLOSCAN_CLI_VERSION}")"
+    extra+=" --build-arg $(_holohub_shquote "HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS=${HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS}")"
+
+    if [[ -n "${HOLOSCAN_CLI_DEFAULT_DOCKER_BUILD_ARGS:-}" ]]; then
+        export HOLOSCAN_CLI_DEFAULT_DOCKER_BUILD_ARGS="${HOLOSCAN_CLI_DEFAULT_DOCKER_BUILD_ARGS}${extra}"
+    else
+        export HOLOSCAN_CLI_DEFAULT_DOCKER_BUILD_ARGS="${extra# }"
+    fi
+}
+
+_holohub_extend_default_build_args
+
+exec "${PYTHON_BIN}" -m holoscan_cli "$@"

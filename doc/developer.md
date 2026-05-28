@@ -1,11 +1,13 @@
-# HoloHub Developer Reference
+# Holoscan Sensor Bridge Hub Developer Reference
 
-In this guide we aim to document advanced workflows to aid developers in working with HoloHub,
-and to support advanced project use cases.
+This guide documents advanced workflows for Sensor Bridge Hub, a HoloHub-layout
+source project that uses the standalone `holoscan-cli` package through the
+top-level `./holohub` wrapper.
 
 ## Table of Contents
 
 - [Native Build](#native-build)
+- [CLI Wrapper](#cli-wrapper)
 - [Advanced Container Build Options](#advanced-build-options-container)
 - [Advanced Container Launch Options](#advanced-launch-options-container)
 - [Advanced Options for Building Applications](#advanced-options-for-building-applications)
@@ -17,7 +19,7 @@ and to support advanced project use cases.
 
 Refer to the [Holoscan SDK README](https://github.com/nvidia-holoscan/holoscan-sdk/blob/main/README.md) for ways to install Holoscan SDK in local environment: Debian package, Python wheels or from source.
 
-Install the package dependencies for HoloHub on your host system. The easiest way to make sure the minimal package dependencies is to use the `./holohub` script from the top level directory.
+Install the package dependencies for Sensor Bridge Hub on your host system. The easiest way to install the minimal package dependencies is to use the `./holohub` wrapper from the top-level directory.
 
 ```bash
   ./holohub setup  # sudo privileges may be required
@@ -26,8 +28,8 @@ Install the package dependencies for HoloHub on your host system. The easiest wa
 If you prefer you can also install the dependencies manually, typically including the following:
 
 - [CMake](https://www.cmake.org): 3.24.0+
-- Python interpreter: 3.9 to 3.12
-- Python dev: 3.9 to 3.12 (matching version of the interpreter)
+- Python interpreter: 3.10 to 3.13
+- Python dev: 3.10 to 3.13 (matching version of the interpreter)
 - ffmpeg runtime
 - [ngc-cli](https://ngc.nvidia.com/setup/installers/cli)
 - wget
@@ -41,7 +43,24 @@ If you prefer you can also install the dependencies manually, typically includin
 Visit the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/sdk_installation.html) for the latest
 details on dependency versions and custom installation.
 
-*Note: the `./holohub` script setup installs the minimal set of dependencies required to run the sample applications. Other applications might require more dependencies. Please refer to the README of each application for more information.*
+*Note: `./holohub setup` installs the minimal set of dependencies required to run the sample applications. Other applications might require more dependencies. Please refer to the README of each application for more information.*
+
+## CLI Wrapper
+
+`./holohub` is a thin wrapper around `holoscan-cli`. It sets this repository's
+root, metadata search paths, Docker image prefix, and CTest script, then execs
+`python -m holoscan_cli`.
+
+The wrapper pins the current prerelease wheel from TestPyPI:
+
+```bash
+HOLOSCAN_CLI_VERSION=holoscan-cli==4.3.0a26390596878 \
+HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS="--index-url https://test.pypi.org/simple/" \
+./holohub list
+```
+
+Run `./holohub env-info` to inspect the `HOLOSCAN_CLI_*` values seen by the
+CLI.
 
 ## Advanced Build Options (Container)
 
@@ -94,6 +113,18 @@ Where:
 
 - `--docker-file`  is the path to the container's Dockerfile;
 - `--img` defines the fully qualified image name.
+
+The smallest Dockerfile fragment that provides the in-container `holoscan`
+command is:
+
+```dockerfile
+FROM nvcr.io/nvidia/clara-holoscan/holoscan:v<sdk-version>-<gpu-type>
+RUN pip install holoscan-cli
+```
+
+The root `Dockerfile` and application template pin the same TestPyPI
+`holoscan-cli` prerelease by default through `HOLOSCAN_CLI_INSTALL_SPEC` and
+`HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS`.
 
 ### Build with Verbose Output
 

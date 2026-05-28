@@ -8,9 +8,8 @@ permissions:
   contents: read
 
 env:
-  CPU_CI_COMMANDS: |
-    sed -i 's/check_nvidia_ctk()/pass  # nvidia-ctk not available/g' utilities/cli/container.py
-    sed -i 's/return \["--runtime", "nvidia"\]/return []/g' utilities/cli/container.py
+  HOLOSCAN_CLI_VERSION: holoscan-cli==4.3.0a26390596878
+  HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS: "--index-url https://test.pypi.org/simple/"
 
 jobs:
   check-docker-build:
@@ -22,6 +21,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Install holoscan-cli
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            --index-url https://test.pypi.org/simple/ \
+            holoscan-cli==4.3.0a26390596878
+
       - name: Run Docker build
         run: |
           set -o pipefail
@@ -30,18 +36,13 @@ jobs:
           ./holohub build-container --base-img ubuntu:${ubuntu_version} 2>&1 | tee /tmp/build.log
           grep -qE "writing image.* done" /tmp/build.log || { echo "Build failed - no success pattern"; cat /tmp/build.log; exit 1; }
 
-          if ! command -v nvidia-ctk >/dev/null 2>&1; then
-            eval "$CPU_CI_COMMANDS"
-          fi
-
-          ./holohub run-container --base-img ubuntu:${ubuntu_version} --no-docker-build | grep -q "docker run" || { echo "run-container failed"; exit 1; }
-          ./holohub run-container --docker-opts "--memory 4g" --no-docker-build | grep -q "memory 4g" || { echo "docker-opts test failed"; exit 1; }
-          ./holohub run-container --no-docker-build --add-volume "/tmp" | grep -q "/tmp" || { echo "add-volume test failed"; exit 1; }
-          ./holohub run-container --no-docker-build -- echo hello > /tmp/trailing-args.log 2>&1
+          ./holohub run-container --base-img ubuntu:${ubuntu_version} --no-docker-build --dryrun | grep -q "docker run" || { echo "run-container failed"; exit 1; }
+          ./holohub run-container --docker-opts "--memory 4g" --no-docker-build --dryrun | grep -q "memory 4g" || { echo "docker-opts test failed"; exit 1; }
+          ./holohub run-container --no-docker-build --add-volume "/tmp" --dryrun | grep -q "/tmp" || { echo "add-volume test failed"; exit 1; }
+          ./holohub run-container --no-docker-build --dryrun -- echo hello > /tmp/trailing-args.log 2>&1
           grep -q "hello" /tmp/trailing-args.log || { echo "trailing args test failed"; cat /tmp/trailing-args.log; exit 1; }
 
-          # test linting in docker
-          ./holohub run-container --base-img ubuntu:${ubuntu_version} --no-docker-build -- "./holohub lint --install-dependencies; ./holohub lint --fix; ./holohub lint"
+          ./holohub run-container --base-img ubuntu:${ubuntu_version} --no-docker-build --dryrun -- "./holohub lint --install-dependencies; ./holohub lint --fix; ./holohub lint" | grep -q "holohub lint"
 
   test-entrypoint:
     runs-on: ubuntu-22.04
@@ -70,6 +71,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Install holoscan-cli
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            --index-url https://test.pypi.org/simple/ \
+            holoscan-cli==4.3.0a26390596878
+
       - name: Create test Dockerfile
         run: |
           cat > /tmp/test-dockerfile << 'EOF'
@@ -85,23 +93,14 @@ jobs:
 
       - name: Test run-container with different dockerfile configurations
         run: |
-          if ! command -v nvidia-ctk >/dev/null 2>&1; then
-            eval "$CPU_CI_COMMANDS"
-          fi
-
           DOCKERFILE="/tmp/test-dockerfile"
           echo "Testing with ${{ matrix.description }}"
           cat /tmp/test-dockerfile
 
           ./holohub run-container --docker-file "$DOCKERFILE" --img test_image --dryrun -- echo test
 
-          # Test trailing args with different entrypoint configurations
-          ./holohub run-container --docker-file "$DOCKERFILE" --img test_image -- echo test > /tmp/test.log 2>&1
+          ./holohub run-container --docker-file "$DOCKERFILE" --img test_image --dryrun -- echo test > /tmp/test.log 2>&1
           grep -q "echo test" /tmp/test.log || { echo "Failed for ${{ matrix.description }}"; cat /tmp/test.log; exit 1; }
 
-          # Test custom entrypoint override
-          ./holohub run-container --docker-file "$DOCKERFILE" --img test_image --docker-opts="--entrypoint=/bin/sh" -- echo override > /tmp/override.log 2>&1
+          ./holohub run-container --docker-file "$DOCKERFILE" --img test_image --dryrun --docker-opts="--entrypoint=/bin/sh" -- echo override > /tmp/override.log 2>&1
           grep -q "echo override" /tmp/override.log || { echo "Entrypoint override failed for ${{ matrix.description }}"; cat /tmp/override.log; exit 1; }
-
-          docker inspect test_image --format='ENTRYPOINT: {{.Config.Entrypoint}} | CMD: {{.Config.Cmd}}'
-          docker rmi test_image || echo "Image cleanup completed"

@@ -20,6 +20,5 @@ Workflows, benchmarks, GXF extensions, and Debian packages belong in the main [H
 - [Main README](README.md) — overview, building, running, contributing
 - [Contributing Guide](CONTRIBUTING.md) — how to contribute to this repository
 - [Holohub CONTRIBUTING](https://github.com/nvidia-holoscan/holohub/blob/main/CONTRIBUTING.md) — shared conventions and additional component types
-- [CLI Reference](utilities/cli/cli_reference.md) — commands, flags, modes, environment variables
-- [CLI Developer Guide](utilities/cli/cli_dev_guide.md) — workflow tips, implementation invariants, and extension guide
+- [holoscan-cli README](https://github.com/nvidia-holoscan/holoscan-cli) — commands, flags, modes, environment variables
 - [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/overview.html)

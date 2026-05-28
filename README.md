@@ -35,8 +35,18 @@ Refer to the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) with buildx
 - `git`
-- (optional) Python 3.10+ on the host for the `holohub` CLI script
+- Python 3.10+ on the host for the `holohub` wrapper
 - NVIDIA NGC credentials at [ngc.nvidia.com](https://catalog.ngc.nvidia.com/)
+
+The `./holohub` wrapper delegates to the standalone `holoscan-cli` package. If
+`holoscan-cli` is not importable, the wrapper installs it with `pip` on first
+use. The wrapper pins the current prerelease wheel from TestPyPI:
+
+```sh
+HOLOSCAN_CLI_VERSION=holoscan-cli==4.3.0a26390596878 \
+HOLOSCAN_CLI_INSTALL_EXTRA_FLAGS="--index-url https://test.pypi.org/simple/" \
+./holohub --help
+```
 
 #### Fetch
 
