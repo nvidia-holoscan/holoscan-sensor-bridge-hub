@@ -26,13 +26,13 @@ your project. Requirements could include hardware or software.
 
 ## Build and Run Instructions
 
-List the minimum list of commands the user must execute inside or outside of the HoloHub
+List the minimum list of commands the user must execute inside or outside of the
 development container to build and run your application.
 
-In many cases a HoloHub project may be built and run with a single development container command:
-
 ```sh
-./holohub run my_project
+cmake -B build -S . -DAPP_my_project=ON
+cmake --build build
+# Run the application as documented in metadata.json
 ```
 
 ## Acknowledgements

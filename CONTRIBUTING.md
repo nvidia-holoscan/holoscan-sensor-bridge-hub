@@ -74,7 +74,7 @@ Before getting started:
 3. **Develop Your Contribution**
 
    - Follow the specific guidelines for your [contribution type](#types-of-contributions)
-   - If you are developing a new application, you can use the `./holohub create <application_name>` command to generate the initial project scaffolding. This command sets up a new project with the appropriate directory structure and necessary files.
+   - If you are developing a new application, copy from the `template/` folder under the appropriate component directory to scaffold the initial project structure.
    - Ensure your code meets [HoloHub standards](#preparing-your-submission)
    - Test your changes locally
 
@@ -481,7 +481,7 @@ Before submitting your contribution, ensure you've completed:
 
 - [ ] **Code Quality**
   - [ ] Code follows Holoscan SDK coding standards
-  - [ ] All linting checks pass (`./holohub lint`)
+  - [ ] All linting checks pass (`pre-commit run --all-files`)
   - [ ] Code is properly documented with clear comments
   - [ ] Error handling is implemented appropriately
 
@@ -530,24 +530,20 @@ HoloHub enforces code quality through automated linting checks that run in CI/CD
 #### Installing Lint Tools
 
 ```bash
-./holohub lint --install-dependencies
+python -m pip install -r utilities/requirements.lint.txt pre-commit
+sudo apt-get install -y clang-format
 ```
 
 #### Running Lint Checks
 
 ```bash
 # Lint entire repository
-./holohub lint
-
-# Lint specific path
-./holohub lint path/to/your/code
+pre-commit run --all-files
 ```
 
 #### Fixing Common Lint Issues
 
-```bash
-./holohub lint --fix
-```
+Many hooks auto-fix on run. Re-run `pre-commit run --all-files` after fixes are applied.
 
 ### Testing
 
@@ -562,7 +558,9 @@ Applications should include a testing section in their `CMakeLists.txt` for func
 #### Running Tests
 
 ```bash
-./holohub test <project>
+cmake -B build -S . -DAPP_<project>=ON -DBUILD_TESTING=ON
+cmake --build build
+cd build && ctest
 ```
 
 ### Unit Testing Python Operators
@@ -658,10 +656,6 @@ For examples, see existing test files like:
 **Development Environment:**
 
 - VSCode Dev Container support available in Holoscan SDK
-- `holohub` CLI tool with debugging options:
-  - `--as_root`: Launch as root for expanded debugging permissions
-  - `--local_sdk_root`: Mount local SDK for debug symbol access
-
 **Debugging Tools:**
 
 - **C++ Applications**: Use `gdb` for tracing and debugging
@@ -701,7 +695,7 @@ Low latency is crucial for many HoloHub applications. Use these resources for pe
    - Ensure correct build flags are used
 
 2. **Linting Errors**
-   - Run `./holohub lint` locally before submitting
+   - Run `pre-commit run --all-files` locally before submitting
    - Use automated fix commands when available
    - Check code formatting against standards
 

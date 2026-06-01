@@ -26,19 +26,16 @@ FROM ${BASE_IMAGE} AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# --------------------------------------------------------------------------
-#
-# Holohub dev setup
-#
-RUN mkdir -p /tmp/scripts
-COPY holohub /tmp/scripts/
-RUN mkdir -p /tmp/scripts/utilities
-COPY utilities /tmp/scripts/utilities/
-RUN chmod +x /tmp/scripts/holohub
-RUN /tmp/scripts/holohub setup && rm -rf /var/lib/apt/lists/*
-
-# Enable autocomplete
-RUN echo ". /etc/bash_completion.d/holohub_autocomplete" >> /etc/bash.bashrc
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        wget \
+        xvfb \
+        git \
+        unzip \
+        ffmpeg \
+        ninja-build \
+        libv4l-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # - This variable is consumed by all dependencies below as an environment variable (CMake 3.22+)
 # - We use ARG to only set it at docker build time, so it does not affect cmake builds
@@ -72,10 +69,10 @@ RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt
 #
 # Application setup
 #
-WORKDIR /workspace/holohub
+WORKDIR /workspace/holoscan-sensor-bridge-hub
 
 # Set default environment variables for the application
-ENV HOLOSCAN_INPUT_PATH=/workspace/holohub/data
+ENV HOLOSCAN_INPUT_PATH=/workspace/holoscan-sensor-bridge-hub/data
 # TODO: Add any application-specific environment variables here
 # ENV YOUR_APP_ENV_VAR=value
 
@@ -83,4 +80,4 @@ ENV HOLOSCAN_INPUT_PATH=/workspace/holohub/data
 # EXPOSE 8080
 
 # TODO: Uncomment and modify the following if your application needs a specific entrypoint
-# ENTRYPOINT ["./holohub", "run", "{{ cookiecutter.project_slug }}"]
+# ENTRYPOINT ["./build/my_app/my_app"]

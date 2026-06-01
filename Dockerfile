@@ -30,55 +30,23 @@ ARG CMAKE_BUILD_TYPE=Release
 
 # --------------------------------------------------------------------------
 #
-# Set up prerequisites to run HoloHub CLI
+# Common development packages
 #
 # --------------------------------------------------------------------------
-FROM base AS holohub-cli-prerequisites
+FROM base AS dev-setup
 
-# Install python3 if not present (needed for holohub CLI)
-ARG PYTHON_VERSION=python3
-RUN if ! command -v python3 >/dev/null 2>&1; then \
-        apt-get update \
-        && apt-get install --no-install-recommends -y \
-            software-properties-common curl gpg-agent \
-        && add-apt-repository ppa:deadsnakes/ppa \
-        && apt-get update \
-        && apt-get install --no-install-recommends -y \
-            ${PYTHON_VERSION} \
-        && apt purge -y \
-            python3-pip \
-            software-properties-common \
-        && apt-get autoremove --purge -y \
-        && rm -rf /var/lib/apt/lists/* \
-        && update-alternatives --install /usr/bin/python python /usr/bin/${PYTHON_VERSION} 100 \
-        && if [ "${PYTHON_VERSION}" != "python3" ]; then \
-            update-alternatives --install /usr/bin/python3 python3 /usr/bin/${PYTHON_VERSION} 100 \
-            ; fi \
-    ; fi
-ENV PIP_BREAK_SYSTEM_PACKAGES=1
-RUN if ! python3 -m pip --version >/dev/null 2>&1; then \
-        curl -sS https://bootstrap.pypa.io/get-pip.py | ${PYTHON_VERSION} \
-    ; fi
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        wget \
+        xvfb \
+        git \
+        unzip \
+        ffmpeg \
+        ninja-build \
+        libv4l-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# --------------------------------------------------------------------------
-#
-# Use HoloHub CLI to set up common packages for developing with Holoscan SDK
-#
-# --------------------------------------------------------------------------
-FROM holohub-cli-prerequisites AS holohub-cli
-
-RUN mkdir -p /tmp/scripts
-COPY holohub /tmp/scripts/
-RUN mkdir -p /tmp/scripts/utilities
-COPY utilities /tmp/scripts/utilities/
-RUN chmod +x /tmp/scripts/holohub
-RUN /tmp/scripts/holohub setup && rm -rf /var/lib/apt/lists/*
-
-# Enable autocomplete
-RUN echo ". /etc/bash_completion.d/holohub_autocomplete" >> /etc/bash.bashrc
-
-# Set default Holohub data directory
-ENV HOLOSCAN_INPUT_PATH=/workspace/holohub/data
+ENV HOLOSCAN_INPUT_PATH=/workspace/holoscan-sensor-bridge-hub/data
 
 # --------------------------------------------------------------------------
 #
@@ -86,7 +54,7 @@ ENV HOLOSCAN_INPUT_PATH=/workspace/holohub/data
 # Holoscan SDK Flow Benchmarking performance tools
 #
 # --------------------------------------------------------------------------
-FROM holohub-cli AS benchmarking-setup
+FROM dev-setup AS benchmarking-setup
 
 ARG CMAKE_BUILD_TYPE=Release
 
@@ -107,14 +75,14 @@ RUN if ! grep -q "VERSION_ID=\"22.04\"" /etc/os-release; then \
     fi
 COPY benchmarks/holoscan_flow_benchmarking/requirements.txt /tmp/benchmarking_requirements.txt
 RUN pip install -r /tmp/benchmarking_requirements.txt
-ENV PYTHONPATH=/workspace/holohub/benchmarks/holoscan_flow_benchmarking
+ENV PYTHONPATH=/workspace/holoscan-sensor-bridge-hub/benchmarks/holoscan_flow_benchmarking
 
 # --------------------------------------------------------------------------
 #
 # Set up common packages for developing with Yuan Qcap
 #
 # --------------------------------------------------------------------------
-FROM holohub-cli AS yuan-qcap
+FROM dev-setup AS yuan-qcap
 
 # Qcap dependency
 RUN apt update \
@@ -129,7 +97,7 @@ RUN apt update \
 # Set up common packages for developing with RTI Connext DDS
 #
 # --------------------------------------------------------------------------
-FROM holohub-cli AS dds
+FROM dev-setup AS dds
 
 RUN apt update \
     && apt install --no-install-recommends -y \
@@ -141,7 +109,7 @@ RUN echo 'export JREHOME=$(readlink /etc/alternatives/java | sed -e "s/\/bin\/ja
 # Set up packages for developing with AJA Capture Cards
 #
 # --------------------------------------------------------------------------
-FROM holohub-cli AS holohub-aja
+FROM dev-setup AS holohub-aja
 
 RUN apt update \
     && apt install --no-install-recommends -y \
@@ -154,4 +122,4 @@ RUN apt update \
 # as the environment for project development.
 #
 # --------------------------------------------------------------------------
-FROM holohub-cli AS holohub-dev
+FROM dev-setup AS holohub-dev

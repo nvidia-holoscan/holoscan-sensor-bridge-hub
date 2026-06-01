@@ -10,8 +10,7 @@ Workflows, benchmarks, GXF extensions, and Debian packages belong in the main [H
 
 ## Boundaries
 
-- **Always** run `./holohub run-container -- "./holohub lint --install-dependencies; ./holohub lint"` before committing
-- **Always** use `--dryrun --verbose` to inspect a CLI command before running it for real
+- **Always** run lint checks before committing (`pre-commit run --all-files`, or install tools from `utilities/requirements.lint.txt`)
 - **Ask first** before changing `metadata.json` schemas, shared Dockerfiles, or CMake registration macros (`add_holohub_application`, `add_holohub_operator`, etc.)
 - **Never** delete `build/`, `data/`, or `install/` directories without asking
 
@@ -20,6 +19,5 @@ Workflows, benchmarks, GXF extensions, and Debian packages belong in the main [H
 - [Main README](README.md) — overview, building, running, contributing
 - [Contributing Guide](CONTRIBUTING.md) — how to contribute to this repository
 - [Holohub CONTRIBUTING](https://github.com/nvidia-holoscan/holohub/blob/main/CONTRIBUTING.md) — shared conventions and additional component types
-- [CLI Reference](utilities/cli/cli_reference.md) — commands, flags, modes, environment variables
-- [CLI Developer Guide](utilities/cli/cli_dev_guide.md) — workflow tips, implementation invariants, and extension guide
+- [Developer Guide](doc/developer.md) — container and native build workflows
 - [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/overview.html)

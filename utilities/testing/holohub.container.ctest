@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Usage (run from the holohub repo root or invoke ctest directly):
+# Usage (run from the repository root or invoke ctest directly):
 #   ctest -DAPP=my_app -DTAG=<tag> -S utilities/testing/holohub.container.ctest -VV
 #
 # CTest -D variables:
@@ -30,23 +30,6 @@
 #                         instead of calling FATAL_ERROR. Lets the caller
 #                         distinguish test failures (exit 0, file present)
 #                         from infra failures (exit != 0).
-#
-#   ./holohub test [project] [options]
-#     Examples: ./holohub test app_name
-#               ./holohub test operator_name
-#               ./holohub test video_streaming --ctest-options "-R unit_tests -VV"
-# `./holohub test` options supported by this ctest config:
-#   --verbose               Print extra CLI output; also adds -VV to ctest
-#   --dryrun                Echo the commands without executing them
-#   --clear-cache           Remove cached build/data directories before testing
-#   --site-name NAME        Sets CTEST_SITE
-#   --cdash-url URL         Submit results to the specified CDash endpoint
-#   --platform-name NAME    Sets PLATFORM_NAME portion of the CTest build name
-#   --cmake-options OPT     Append cmake configure flags (may be passed multiple times)
-#   --ctest-options OPT     Append raw ctest arguments (may be passed multiple times)
-#   --no-xvfb               Disable xvfb-run wrapper (enabled by default for GUI apps)
-#   --coverage              Build with coverage instrumentation and run ctest_coverage
-#   --build-name-suffix TAG Override the auto-detected TAG used by CTest
 
 
 set(PROJ_PREFIX APP)

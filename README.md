@@ -11,8 +11,8 @@ A focused collection of reference applications, operators, and tutorials for [Ho
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Building](#container-build-recommended)
-- [Running](#running-applications)
+- [Building](#building)
+- [Running](#running)
 - [Contributing](#contributing)
 - [More Information](#more-information)
 
@@ -35,7 +35,6 @@ Refer to the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) with buildx
 - `git`
-- (optional) Python 3.10+ on the host for the `holohub` CLI script
 - NVIDIA NGC credentials at [ngc.nvidia.com](https://catalog.ngc.nvidia.com/)
 
 #### Fetch
@@ -45,31 +44,27 @@ git clone https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub.git
 cd holoscan-sensor-bridge-hub
 ```
 
-#### HoloHub run command (recommended)
-
-```sh
-./holohub run <application_name>
-```
-
 See each project's `README.md` and `metadata.json` for dependencies and hardware requirements.
 
 #### Build
 
+Build the default development container:
+
 ```sh
-./holohub build-container [project_name]
+docker build -t holoscan-sensor-bridge-hub:dev .
 ```
+
+Or build a project-specific container using the Dockerfile path in that project's `metadata.json`.
 
 See [`doc/developer.md`](./doc/developer.md) for native build and development details.
 
 ## Running
 
-```sh
-./holohub run <application_name>
-```
+Follow the instructions in each application's `README.md`. Applications typically define a run command in `metadata.json` that can be executed inside the development container.
 
 ## Contributing
 
-Please review [CONTRIBUTING.md](./CONTRIBUTING.md). New projects should use `./holohub create` and the `template/` folders under each component directory.
+Please review [CONTRIBUTING.md](./CONTRIBUTING.md). New projects should use the `template/` folders under each component directory.
 
 ## More Information
 

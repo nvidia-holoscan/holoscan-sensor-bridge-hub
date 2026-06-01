@@ -1,15 +1,13 @@
 # HoloHub Developer Reference
 
-In this guide we aim to document advanced workflows to aid developers in working with HoloHub,
+In this guide we aim to document advanced workflows to aid developers working in Holoscan Sensor Bridge Hub,
 and to support advanced project use cases.
 
 ## Table of Contents
 
 - [Native Build](#native-build)
-- [Advanced Container Build Options](#advanced-build-options-container)
-- [Advanced Container Launch Options](#advanced-launch-options-container)
-- [Advanced Options for Building Applications](#advanced-options-for-building-applications)
-- [Advanced Options for Running Applications](#advanced-options-for-running-applications)
+- [Container Build](#container-build)
+- [Running Applications](#running-applications)
 
 ## Native Build
 
@@ -17,13 +15,7 @@ and to support advanced project use cases.
 
 Refer to the [Holoscan SDK README](https://github.com/nvidia-holoscan/holoscan-sdk/blob/main/README.md) for ways to install Holoscan SDK in local environment: Debian package, Python wheels or from source.
 
-Install the package dependencies for HoloHub on your host system. The easiest way to make sure the minimal package dependencies is to use the `./holohub` script from the top level directory.
-
-```bash
-  ./holohub setup  # sudo privileges may be required
-```
-
-If you prefer you can also install the dependencies manually, typically including the following:
+Install the package dependencies on your host system. Typical requirements include:
 
 - [CMake](https://www.cmake.org): 3.24.0+
 - Python interpreter: 3.9 to 3.12
@@ -41,235 +33,49 @@ If you prefer you can also install the dependencies manually, typically includin
 Visit the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/sdk_installation.html) for the latest
 details on dependency versions and custom installation.
 
-*Note: the `./holohub` script setup installs the minimal set of dependencies required to run the sample applications. Other applications might require more dependencies. Please refer to the README of each application for more information.*
+*Note: Other applications might require more dependencies. Please refer to the README of each application for more information.*
 
-## Advanced Build Options (Container)
+### Building with CMake
 
-### View All Build Options
-
-Run the following to view all build options available for the HoloHub container script:
-
-```sh
-./holohub build-container --help
-```
-
-### Custom Base Image
-
-You may configure a custom base image for building the HoloHub container. For instance, if you want to use a local Holoscan container as the base image, use the following command:
+Configure and build a specific application from the repository root:
 
 ```bash
-  ./holohub build-container --base-img holoscan-sdk-build-x86_64:latest --img holohub:sdk-dev-latest
-```
-
-The command above uses the following arguments:
-
-- `--base-img`  is used to configure the base container image;
-- `--img` defines the fully qualified name of the image output by `./holohub`.
-
-After ```./holohub build-container``` has completed ```docker images``` will list the new image:
-
-```bash
-user@ubuntu-20-04:/media/data/github/holohub$ docker images
-REPOSITORY                               TAG               IMAGE ID       CREATED          SIZE
-holohub                                  sdk-dev-latest    cb0231f77856   54 seconds ago   8.22GB
-```
-
-Base containers created during the Holoscan SDK build process use the following naming convention by default:
-
-| Base Image Name | Target Architecture | Target IGX Configuration |
-| --- | --- | --- |
-| `holoscan-sdk-build-x86_64` | `x86_64` | N/A |
-| `holoscan-sdk-build-aarch64-dgpu` | `aarch64` | dGPU mode |
-| `holoscan-sdk-build-aarch64-igpu` | `aarch64` | iGPU mode |
-
-### Using a Custom Dockerfile
-
-Several HoloHub applications use a custom Dockerfile to alter or extend the default HoloHub container. Use the following command to build from a custom Dockerfile:
-
-```bash
-./holohub build-container --docker-file <path_to_dockerfile>  --img holohub-debug:latest
-```
-
-Where:
-
-- `--docker-file`  is the path to the container's Dockerfile;
-- `--img` defines the fully qualified image name.
-
-### Build with Verbose Output
-
-To print the values for base image, Dockerfile, GPU type, and output image name, use ```--verbose```.
-
-For example, on an x86_64 system with dGPU, the default build command will print the following values when using the ```--verbose``` option.
-
-```bash
-user@ubuntu-20-04:/media/data/github/holohub$ ./holohub build-container --verbose
-Build (HOLOHUB_ROOT:/media/data/github/holohub)...
-Build (gpu_type_type:dgpu)...
-Build (base_img:nvcr.io/nvidia/clara-holoscan/holoscan:v0.6.0-dgpu)...
-Build (docker_file_path:/media/data/github/holohub/Dockerfile)...
-Build (img:holohub:ngc-v0.6.0-dgpu)...
-....
-```
-
-## Advanced Launch Options (Container)
-
-### View All Launch Options
-
-Run the command below to view all available launch options in the `holohub` script:
-
-```sh
-./holohub run-container --help
-```
-
-### Build and Launch a Local Holoscan SDK Container
-
-To use a HoloHub container image built with a local Holoscan SDK container:
-
-```bash
-./holohub run-container --img holohub:local-sdk-latest --local-sdk-root <path_to_holoscan_sdk>
-```
-
-where `<path_to_holoscan_sdk>` is the path to the Holoscan SDK root directory containing the build directory.
-Please refer to the [Holoscan SDK Developer Guide](https://github.com/nvidia-holoscan/holoscan-sdk/blob/main/DEVELOP.md) for more details on how to build the Holoscan SDK from source.
-
-In the container, to verify the build directory (with a python build) is mounted correctly, run the following command:
-
-```bash
-python -c "import holoscan; print(holoscan.__file__)"
-```
-
-The output should be something like:
-
-```bash
-/workspace/holoscan-sdk/build-x86_64/python/lib/holoscan/__init__.py
-```
-
-If Python supported is not enabled, `/workspace/holoscan-sdk` can be manually inspected to confirm the mount.
-The directory should contain a non-empty `build-<arch>-<gpu_type>` or `install-<arch>-<gpu_type>` directory.
-
-### Launch a Named HoloHub Container
-
-To launch custom HoloHub container with fully qualified name, e.g. "holohub:ngc-sdk-sample-app"
-
-```bash
-./holohub run-container --img holohub:ngc-sdk-sample-app --no-docker-build
-```
-
-### Forward Graphics From Containers
-
-HoloHub automatically forwards X11 and Wayland displays when `DISPLAY` or
-`WAYLAND_DISPLAY` is set on the host.
-
-### Support Nsight Systems profiling in the HoloHub Container
-
-```bash
-  ./holohub run-container --nsys-profile
-```
-
-## Advanced Options for Building Applications
-
-### View Build Options
-
-```sh
-./holohub build --help
-```
-
-### Local SDK Path
-
-If you have an installation of the Holoscan SDK which is not in a standard path, you may want to provide the root directory of your Holoscan SDK installation.
-
-```bash
-  ./holohub build --configure-args="-Dholoscan_DIR=/path/to/holoscan/install/lib/cmake/holoscan"
-```
-
-### Building a Specific Application
-
-By default HoloHub builds all the sample applications that are maintained with the SDK. You can build specific applications by the name of the directory.
-
-```bash
-  ./holohub build <application>
-```
-
-For example:
-
-```bash
-  ./holohub build endoscopy_tool_tracking
-```
-
-Note that CMake will build the application in the directory specified. If there are multiple languages, the script will attempt to build all of them.
-
-### Building application or operator manually
-
-If you prefer to build applications and operator manually you can follow the steps below.
-
-```bash
-# Export cuda (in case it's not already in the path)
-export PATH=$PATH:/usr/local/cuda/bin
-
-# Configure HoloHub with CMake
-cmake -S <path_to_holohub_source>            # Source directory
-      -B build                               # Build directory
-      -DPython3_EXECUTABLE=/usr/bin/python3  # Specifies the python executable for CMake to find the correct version
-      -DHOLOHUB_DATA_DIR=$(pwd)/data         # Specifies the data directory
-      -DAPP_<name_of_the_application>=1      # Specified the application to build
-
-
-# Build the application(s)
+cmake -B build -S . -DAPP_<application_name>=ON
 cmake --build build
 ```
 
-## Additional Build Notes
+Replace `<application_name>` with the project name (for example, `APP_my_app=ON`).
 
-While not all applications requires building HoloHub, the current build system automatically manages dependencies (applications/operators) and also downloads and converts datasets at build time.
+## Container Build
 
-You can refer to the README of each application/operator if you prefer to build/run them manually.
+Build the default development container from the repository root:
 
-The `./holohub` script creates a `data` subdirectory to store the downloaded HoloHub data.
-This directory is noted `HOLOHUB_DATA_DIR/holohub_data_dir` in the documentation, READMEs and metadata files.
-
-## Advanced Options for Running Applications
-
-### Pass additional arguments to the application command
-
-```bash
-  ./holohub run endoscopy_tool_tracking --language=python --run-args='-r visualizer'
+```sh
+docker build -t holoscan-sensor-bridge-hub:dev .
 ```
 
-### Profile using Nsight Systems
+Build a specific Dockerfile stage (for example, AJA development):
 
-For example, to profile `endoscopy_tool_tracking` using Nsight Systems:
-
-First config the app's replay count to 10 frames:
-
-```diff
---- a/applications/endoscopy_tool_tracking/python/endoscopy_tool_tracking.yaml
-+++ b/applications/endoscopy_tool_tracking/python/endoscopy_tool_tracking.yaml
-@@ -81,7 +81,7 @@ replayer:
-   frame_rate: 0   # as specified in timestamps
-   repeat: true    # default: false
-   realtime: true  # default: true
--  count: 0        # default: 0 (no frame count restriction)
-+  count: 10
-
+```sh
+docker build --target holohub-aja -t holoscan-sensor-bridge-hub:aja .
 ```
 
-Then run the app with `--nsys-profile` option:
+Launch an interactive development container with the repository mounted:
 
-```bash
-  ./holohub run endoscopy_tool_tracking --language=python --nsys-profile
+```sh
+docker run --gpus all -it --rm \
+  -v "$(pwd)":/workspace/holoscan-sensor-bridge-hub \
+  -w /workspace/holoscan-sensor-bridge-hub \
+  holoscan-sensor-bridge-hub:dev
 ```
 
-This will create a Nsight Systems report file in the application working directory. Information on the generated report file is printed on the end of the application log:
+Projects may provide their own `Dockerfile`; check each project's `metadata.json` and README for details.
 
-```text
-Generating '/tmp/nsys-report-bcd8.qdstrm'
-[1/1] [========================100%] report8.nsys-rep
-Generated:
-    /workspace/holohub/build/endoscopy_tool_tracking/report8.nsys-rep
-```
+## Running Applications
 
-This file can be loaded and visualized with the Nsight Systems UI application:
+Each application defines run instructions in its `README.md` and `metadata.json`. After building inside a container or native environment, run the application binary or script as documented for that project.
 
-```bash
-  nsys-ui /workspace/holohub/build/endoscopy_tool_tracking/report8.nsys-rep
-```
+The repository creates a `data` subdirectory under the build directory to store downloaded datasets.
+This directory is noted as `HOLOHUB_DATA_DIR` / `<holohub_data_dir>` in documentation, READMEs, and metadata files.
+
+For profiling with Nsight Systems, run applications with `nsys profile` inside the development container and inspect the generated report with `nsys-ui`.

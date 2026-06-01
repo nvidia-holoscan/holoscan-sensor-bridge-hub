@@ -8,12 +8,8 @@ Please review [CONTRIBUTING.md](../CONTRIBUTING.md) to contribute tutorials here
 
 ## HoloHub Tutorial Organization Conventions
 
-## Starting a New Project with HoloHub CLI (Recommended)
+## Starting a New Project
 
-Use the HoloHub CLI tool when starting a new project to generate a project folder with files in compliance with HoloHub conventions out of the box.
-
-```bash
-./holohub create
-```
+Copy the [tutorial template](./template/) to scaffold a new project with HoloHub conventions.
 
 See the [tutorial template](./template/) for example `README` and `metadata.json` documents.

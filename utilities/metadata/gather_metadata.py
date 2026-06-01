@@ -86,12 +86,11 @@ def generate_build_and_run_command(entry: dict) -> str:
 
     language = list_normalized_languages(entry.get("metadata", {}).get("language", ""))[0]
     if language == "python":
-        return f"./holohub run {project_name} --language=python"
+        return f"See README for {project_name} (python)"
     elif language in ["cpp", "c++"]:
-        return f"./holohub run {project_name} --language=cpp"
+        return f"See README for {project_name} (cpp)"
     else:
-        # Unknown language, use default
-        return f"./holohub run {project_name}"
+        return f"See README for {project_name}"
 
 
 def _warn_duplicate_projects(metadata_entries: list[dict]) -> None:
