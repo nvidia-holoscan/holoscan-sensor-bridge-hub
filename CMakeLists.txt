@@ -86,4 +86,3 @@ endif()
 # Build applications and operators
 add_subdirectory(applications)
 add_subdirectory(operators)
-

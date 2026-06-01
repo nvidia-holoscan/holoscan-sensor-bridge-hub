@@ -111,7 +111,7 @@ Thanks in advance for your patience as we review your contributions. We do appre
 Choose the right contribution type based on what you want to share. **In this repository**, accept:
 
 | Type | Directory |
-|------|-----------|
+| --- | --- |
 | Application | `applications/` |
 | Operator | `operators/` |
 | Tutorial | `tutorials/` |

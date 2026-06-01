@@ -11,7 +11,7 @@ A focused collection of reference applications, operators, and tutorials for [Ho
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Building](#building)
+- [Building](#build)
 - [Running](#running)
 - [Contributing](#contributing)
 - [More Information](#more-information)
@@ -19,7 +19,7 @@ A focused collection of reference applications, operators, and tutorials for [Ho
 ## Overview
 
 | Directory | Purpose |
-|-----------|---------|
+| --- | --- |
 | [`applications/`](./applications/) | Example Holoscan applications for Sensor Bridge use cases |
 | [`operators/`](./operators/) | Reusable Holoscan operators |
 | [`tutorials/`](./tutorials/) | Walkthroughs and how-tos |
