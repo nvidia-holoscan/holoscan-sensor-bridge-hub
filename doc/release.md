@@ -30,10 +30,10 @@ HoloHub does not directly participate in the NVIDIA AI Enterprise program. Howev
 
 NVIDIA maintains a curated subset of first-party applications in HoloHub that represent a good basis for getting started developing with Holoscan SDK. The list of applications specifically maintained for backwards compatibility extends to the following:
 
-- [`body_pose_estimation`](/applications/body_pose_estimation/README.md)
-- [`endoscopy_tool_tracking`](/applications/endoscopy_tool_tracking/README.md)
-- [`multiai_ultrasound`](/applications/multiai_ultrasound/README.md)
-- [`volume_rendering` (C++)](/applications/volume_rendering/README.md)
+- [`body_pose_estimation`](https://github.com/nvidia-holoscan/holohub/blob/main/applications/body_pose_estimation/README.md)
+- [`endoscopy_tool_tracking`](https://github.com/nvidia-holoscan/holohub/blob/main/applications/endoscopy_tool_tracking/README.md)
+- [`multiai_ultrasound`](https://github.com/nvidia-holoscan/holohub/blob/main/applications/multiai_ultrasound/README.md)
+- [`volume_rendering` (C++)](https://github.com/nvidia-holoscan/holohub/blob/main/applications/volume_rendering/README.md)
 
 ### Short Term Support
 
