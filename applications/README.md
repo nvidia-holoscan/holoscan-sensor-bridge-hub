@@ -14,7 +14,31 @@ Please review the [CONTRIBUTING.md file](https://github.com/nvidia-holoscan/holo
 
 ## Starting a New Project
 
-Copy the [application template](./template/) to scaffold a new project with HoloHub conventions.
+From the repository root, generate an application from the [application template](./template/):
+
+```sh
+./hsb create my_app --language cpp -i false --dryrun
+./hsb create my_app --language cpp -i false
+```
+
+Use `--language python` for a Python application. The wrapper installs the CLI's
+creation dependencies automatically, and `create` validates the generated metadata and
+registers the app in `applications/CMakeLists.txt`. Omit `-i false` for interactive
+prompts. The same commands work inside the development container.
+
+Use `--template <directory>` to choose another Cookiecutter template, or set
+`HOLOSCAN_CLI_CREATE_TEMPLATE` to change the default. The operator and tutorial
+`template/` folders currently contain documentation stubs for manual copying;
+`applications/template` provides the executable C++ and Python scaffolds.
+
+Build and run the generated app from the repository root:
+
+```sh
+./hsb build my_app --dryrun --verbose
+./hsb build my_app
+./hsb run my_app --dryrun --verbose
+./hsb run my_app
+```
 
 ## Required Conventions
 

@@ -18,28 +18,10 @@ import re
 import sys
 from pathlib import Path
 
-import jsonschema
-from jsonschema import Draft4Validator
-from referencing import Registry
-from referencing.jsonschema import DRAFT4
+from holoscan_cli.metadata.metadata_validator import validate_json
+from holoscan_cli.metadata.utils import METADATA_DIRECTORY_CONFIG, iter_metadata_paths
 
-try:
-    from utilities.metadata.utils import (
-        BASE_SCHEMA_PATH,
-        DEFAULT_INCLUDE_PATHS,
-        METADATA_DIRECTORY_CONFIG,
-        get_schema_path,
-        iter_metadata_paths,
-    )
-except ModuleNotFoundError:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from utilities.metadata.utils import (
-        BASE_SCHEMA_PATH,
-        DEFAULT_INCLUDE_PATHS,
-        METADATA_DIRECTORY_CONFIG,
-        get_schema_path,
-        iter_metadata_paths,
-    )
+DEFAULT_INCLUDE_PATHS = ("applications", "operators", "tutorials")
 
 
 def extract_readme_title(readme_path):
@@ -134,28 +116,7 @@ def check_name_matches_readme(metadata_path, json_data):
     return True, "Name matches README.md title"
 
 
-def validate_json(json_data, directory):
-    with open(BASE_SCHEMA_PATH) as file:
-        base_schema = json.load(file)
-    registry = Registry().with_resource(base_schema["$id"], DRAFT4.create_resource(base_schema))
-
-    schema_path = get_schema_path(directory)
-    with open(schema_path, "r") as file:
-        try:
-            execute_api_schema = json.load(file)
-        except json.decoder.JSONDecodeError as err:
-            return False, err
-    validator = Draft4Validator(execute_api_schema, registry=registry)
-
-    try:
-        validator.validate(json_data)
-    except jsonschema.exceptions.ValidationError as err:
-        return False, err
-
-    return True, "valid"
-
-
-def validate_json_directory(directory, ignore_patterns=[], metadata_is_required: bool = True):
+def validate_json_directory(directory, ignore_patterns=None, metadata_is_required: bool = True):
     exit_code = 0
     # Convert json to python object.
     base_path = Path(os.getcwd()) / directory
@@ -170,7 +131,7 @@ def validate_json_directory(directory, ignore_patterns=[], metadata_is_required:
     # Check if there is a metadata.json
     subdirs = next(os.walk(base_path), (None, [], None))[1]
     for subdir in subdirs:
-        if any(pattern in subdir for pattern in ignore_patterns):
+        if subdir in ignore_patterns:
             continue
         if subdir not in metadata_subdirs:
             if metadata_is_required:

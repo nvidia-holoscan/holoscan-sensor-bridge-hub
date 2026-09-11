@@ -14,15 +14,12 @@
 # limitations under the License.
 
 import argparse
-import json
 import logging
 from collections import defaultdict
-from dataclasses import dataclass
-from enum import Enum
 
 import pandas as pd
 import semver
-from gather_metadata import gather_metadata
+from holoscan_cli.metadata.gather_metadata import gather_metadata
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__file__)
@@ -38,52 +35,18 @@ DEFAULT_DETAIL_COLUMNS = [
 DEFAULT_SORT_COLUMNS = ["project_type", "name"]
 
 
-class ProjectType(Enum):
-    """Types of subprojects managed in the HoloHub repository that define metadata schemas."""
-
-    APPLICATION = 0
-    GXF_EXTENSION = 1
-    OPERATOR = 2
-    WORKFLOW = 3
-
-
-@dataclass
-class ProjectTypeData:
-    """HoloHub repository information related to each subproject schema."""
-
-    project_type: ProjectType
-    folder_name: str
-    schema_name: str
-
-    @property
-    def schema_filepath(self) -> str:
-        return f"utilities/metadata/{self.schema_name}.schema.json"
-
-    @property
-    def schema(self) -> dict:
-        if not self.schema:
-            with open(self.schema_filepath, "r") as file:
-                self.schema = json.load(file)
-        return self.schema
-
-
-project_type_data = [
-    ProjectTypeData(ProjectType.APPLICATION, "applications", "application"),
-    ProjectTypeData(ProjectType.GXF_EXTENSION, "gxf_extensions", "gxf_extension"),
-    ProjectTypeData(ProjectType.OPERATOR, "operators", "operator"),
-    ProjectTypeData(ProjectType.WORKFLOW, "workflows", "workflow"),
-]
-
-
 def collect_metadata() -> pd.DataFrame:
     """Gather HoloHub project metadata into a DataFrame"""
-    METADATA_DIRECTORIES = ["applications", "workflows", "gxf_extensions", "operators"]
+    METADATA_DIRECTORIES = ["applications", "operators", "tutorials"]
 
     # Ingest project metadata files
     metadata = gather_metadata(METADATA_DIRECTORIES)
     for entry in metadata:
-        entry["metadata"]["project_type"] = entry["source_folder"]
+        entry["metadata"]["project_type"] = entry["project_type"]
     frames = [pd.json_normalize(entry["metadata"]) for entry in metadata]
+
+    if not frames:
+        return pd.DataFrame(columns=DEFAULT_DETAIL_COLUMNS)
 
     return (
         pd.concat(frames, ignore_index=True)
@@ -99,7 +62,7 @@ def process_versions(metadata_df: pd.DataFrame, key="holoscan_sdk.tested_version
     Expects semantic versions (major.minor.revision or major.minor)
     """
     freq = defaultdict(int)
-    for val in metadata_df[key].dropna():
+    for val in metadata_df.get(key, pd.Series(dtype=object)).dropna():
         versions = val if isinstance(val, list) else [val]
         for version_str in versions:
             try:
@@ -146,7 +109,7 @@ def main(args: argparse.Namespace):
     if args.output:
         metadata_df.to_csv(args.output, index=False)
 
-    metadata_summary_df = metadata_df[DEFAULT_DETAIL_COLUMNS]
+    metadata_summary_df = metadata_df.reindex(columns=DEFAULT_DETAIL_COLUMNS)
 
     if not args.quiet:
         logger.info(summarize_subprojects(metadata_df))

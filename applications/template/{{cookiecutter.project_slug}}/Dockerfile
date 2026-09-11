@@ -37,6 +37,12 @@ RUN apt-get update \
         libv4l-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Use the same CLI pin as the host wrapper, including its shared build helpers.
+COPY requirements-cli.txt /tmp/requirements-cli.txt
+RUN python3 -m pip install --no-cache-dir --extra-index-url https://pypi.nvidia.com \
+        --only-binary=:all: -r /tmp/requirements-cli.txt \
+    && rm /tmp/requirements-cli.txt
+
 # - This variable is consumed by all dependencies below as an environment variable (CMake 3.22+)
 # - We use ARG to only set it at docker build time, so it does not affect cmake builds
 #   performed at docker run time in case users want to use a different BUILD_TYPE

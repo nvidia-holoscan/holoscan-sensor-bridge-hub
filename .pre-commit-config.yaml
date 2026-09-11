@@ -52,7 +52,6 @@ repos:
             ^\.cache/
             | ^build[^/]*/
             | ^install[^/]*/
-            | cmake/pybind11/
             | ^\.local/
             | \.ipynb$
           )

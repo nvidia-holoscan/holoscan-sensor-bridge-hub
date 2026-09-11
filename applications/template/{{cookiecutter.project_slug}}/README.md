@@ -13,39 +13,34 @@ This application is built using Holoscan SDK version {{ cookiecutter.holoscan_ve
 - CUDA (if using GPU acceleration)
 - Docker (for containerized deployment)
 
-## Installation
+## Build and Run
 
-1. Clone this repository
-
-2. Install dependencies:
-
-3. Build the application:
+Run these commands from the **Holoscan Sensor Bridge Hub repository root**:
 
 ```bash
-cmake -B build -S . -DAPP_{{ cookiecutter.project_slug }}=ON
-cmake --build build
+./hsb build {{ cookiecutter.project_slug }} --dryrun --verbose
+./hsb build {{ cookiecutter.project_slug }}
+./hsb run {{ cookiecutter.project_slug }} --dryrun --verbose
+./hsb run {{ cookiecutter.project_slug }}
 ```
 
-## Usage
+The CLI builds this application's Dockerfile using the repository root as its
+Docker context, mounts the checkout, and runs the command from `metadata.json`.
+The image includes the CLI version pinned in the root `requirements-cli.txt`;
+CMake loads its shared helpers from that installed package.
 
-### Running the Application
-
-Follow the run command in `metadata.json` or run the built binary/script directly after building.
-
-### For containerized deployment
-
-The application includes a Dockerfile for containerized deployment:
+To open the application's development container:
 
 ```bash
-# Build the container
-docker build -t {{ cookiecutter.project_slug }}:dev .
-
-# Run the containerized application
-docker run --gpus all -it --rm \
-  -v "$(pwd)":/workspace/{{ cookiecutter.project_slug }} \
-  -w /workspace/{{ cookiecutter.project_slug }} \
-  {{ cookiecutter.project_slug }}:dev
+./hsb run-container {{ cookiecutter.project_slug }} --dryrun --verbose
+./hsb run-container {{ cookiecutter.project_slug }}
 ```
+
+Inside the container, the same `./hsb build` and `./hsb run` commands execute
+locally. For a native SDK installation on the host, add `--local`.
+
+Run the generated smoke test with `./hsb test {{ cookiecutter.project_slug }}`
+(preview it first with `--dryrun --verbose`). Extend the test as you add operators.
 
 ## Development
 
@@ -57,11 +52,9 @@ docker run --gpus all -it --rm \
 ├── Dockerfile
 ├── README.md
 {% if cookiecutter.language == "python" %}├── requirements.txt{% endif %}
-├── src/
-│   └── main.{{ 'py' if cookiecutter.language == 'python' else 'cpp' }}
-├── include/
-├── tests/
-└── docs/
+├── metadata.json
+└── src/
+    └── main.{{ 'py' if cookiecutter.language == 'python' else 'cpp' }}
 ```
 
 ### Adding New Operators

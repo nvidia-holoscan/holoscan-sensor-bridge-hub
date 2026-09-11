@@ -22,10 +22,19 @@ else()
   project(Holohub NONE)
 endif()
 
-# set CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/deps)
+# Load shared helpers from the same pinned CLI used for build and run commands.
+execute_process(
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/hsb" version --json
+  OUTPUT_VARIABLE _holoscan_cli_info
+  COMMAND_ERROR_IS_FATAL ANY
+)
+string(JSON _holoscan_cli_main GET "${_holoscan_cli_info}" executable)
+get_filename_component(HOLOSCAN_CLI_PACKAGE_DIR "${_holoscan_cli_main}" DIRECTORY)
+list(APPEND CMAKE_MODULE_PATH
+  "${HOLOSCAN_CLI_PACKAGE_DIR}/cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
+)
 
 # To configure which apps/operators to build
 include(HoloHubConfigHelpers)

@@ -32,6 +32,7 @@ CTestConfig.cmake
 .docker/
 .config/
 .local/
+.npm/
 tmp/
 
 # History and user files

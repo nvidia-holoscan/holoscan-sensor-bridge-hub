@@ -46,6 +46,12 @@ RUN apt-get update \
         libv4l-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Use the same CLI pin as the host wrapper, including its shared build helpers.
+COPY requirements-cli.txt /tmp/requirements-cli.txt
+RUN python3 -m pip install --no-cache-dir --extra-index-url https://pypi.nvidia.com \
+        --only-binary=:all: -r /tmp/requirements-cli.txt \
+    && rm /tmp/requirements-cli.txt
+
 ENV HOLOSCAN_INPUT_PATH=/workspace/holoscan-sensor-bridge-hub/data
 
 # --------------------------------------------------------------------------
