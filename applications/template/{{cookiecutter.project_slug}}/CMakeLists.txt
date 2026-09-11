@@ -29,6 +29,8 @@ target_link_libraries({{ cookiecutter.project_slug }}
     PRIVATE
     holoscan::core
 )
+
+install(TARGETS {{ cookiecutter.project_slug }} RUNTIME DESTINATION bin)
 {% else %}
 # Python apps import the SDK at runtime and need no compiler to configure.
 project({{ cookiecutter.project_slug }} LANGUAGES NONE)

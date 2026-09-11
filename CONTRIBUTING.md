@@ -179,7 +179,7 @@ Every application and operator should have an associated `metadata.json` file de
 Schemas are available for different contribution types:
 
 - Applications, operators, and tutorials use the schemas shipped with the pinned
-  [Holoscan CLI](https://github.com/nvidia-holoscan/holoscan-cli/tree/main/src/holoscan_cli/metadata).
+  [Holoscan CLI](https://github.com/nvidia-holoscan/holoscan-cli/tree/v5.0.0a1/src/holoscan_cli/metadata).
   `./hsb version --json` reports the installed package location; its `metadata/`
   directory contains the exact schemas used by this hub.
 
