@@ -83,10 +83,7 @@ function(fetch_holohub_operator OPERATOR_NAME)
         && cd "${FETCHCONTENT_BASE_DIR}/holohub_${OPERATOR_NAME}-prefix/src"
         && git sparse-checkout set --no-cone
             operators/${ARGS_PATH}
-            cmake/pybind11_add_holohub_module.cmake
             cmake/nvidia_video_codec.cmake
-            cmake/pybind11/
-            cmake/pydoc/
             operators/operator_util.hpp
         && git checkout ${ARGS_BRANCH}
         # Write a CMakeLists.txt in the operators directory to set CMAKE_MODULE_PATH and add the operator subdirectory

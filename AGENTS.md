@@ -10,7 +10,8 @@ Workflows, benchmarks, GXF extensions, and Debian packages belong in the main [H
 
 ## Boundaries
 
-- **Always** run lint checks before committing (`pre-commit run --all-files`, or install tools from `utilities/requirements.lint.txt`)
+- **Always** run `./hsb run-container -- "./hsb lint --install-dependencies; ./hsb lint"` before committing
+- **Always** use `--dryrun --verbose` to inspect a CLI command before running it for real, where those flags are supported
 - **Ask first** before changing `metadata.json` schemas, shared Dockerfiles, or CMake registration macros (`add_holohub_application`, `add_holohub_operator`, etc.)
 - **Never** delete `build/`, `data/`, or `install/` directories without asking
 

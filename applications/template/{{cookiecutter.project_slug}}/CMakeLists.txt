@@ -15,12 +15,12 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-project({{ cookiecutter.project_slug }})
+{% if cookiecutter.language == "cpp" %}
+project({{ cookiecutter.project_slug }} LANGUAGES CXX)
 
 find_package(holoscan {{ cookiecutter.holoscan_version }} REQUIRED CONFIG
              PATHS "/opt/nvidia/holoscan" "/workspace/holoscan-sdk/install")
 
-{% if cookiecutter.language == "cpp" %}
 add_executable({{ cookiecutter.project_slug }}
     src/main.cpp
 )
@@ -29,10 +29,23 @@ target_link_libraries({{ cookiecutter.project_slug }}
     PRIVATE
     holoscan::core
 )
+{% else %}
+# Python apps import the SDK at runtime and need no compiler to configure.
+project({{ cookiecutter.project_slug }} LANGUAGES NONE)
+{% endif %}
 
 if(BUILD_TESTING)
-  add_test({{ cookiecutter.project_slug }}-test
-    COMMAND echo "Add test coverage for {{ cookiecutter.project_slug }} here"
+{% if cookiecutter.language == "python" %}
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(NAME {{ cookiecutter.project_slug }}-test
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/src/main.py"
+  )
+{% else %}
+  add_test(NAME {{ cookiecutter.project_slug }}-test
+    COMMAND {{ cookiecutter.project_slug }}
+  )
+{% endif %}
+  set_tests_properties({{ cookiecutter.project_slug }}-test PROPERTIES
+    TIMEOUT 60
   )
 endif()
-{% endif %}

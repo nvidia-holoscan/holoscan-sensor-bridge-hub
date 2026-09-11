@@ -178,11 +178,10 @@ Every application and operator should have an associated `metadata.json` file de
 
 Schemas are available for different contribution types:
 
-- [Workflows](./utilities/metadata/workflow.schema.json)
-- [Applications](./utilities/metadata/application.schema.json)
-- [GXF Extensions](./utilities/metadata/gxf_extension.schema.json)
-- [Operators](./utilities/metadata/operator.schema.json)
-- [Tutorials](./utilities/metadata/tutorial.schema.json)
+- Applications, operators, and tutorials use the schemas shipped with the pinned
+  [Holoscan CLI](https://github.com/nvidia-holoscan/holoscan-cli/tree/main/src/holoscan_cli/metadata).
+  `./hsb version --json` reports the installed package location; its `metadata/`
+  directory contains the exact schemas used by this hub.
 
 #### Example metadata.json Structure
 
@@ -566,6 +565,15 @@ sudo apt-get install -y clang-format
 ```
 
 #### Running Lint Checks
+
+Use the development container to install and run the lint tools:
+
+```bash
+./hsb run-container --dryrun --verbose -- "./hsb lint --install-dependencies; ./hsb lint"
+./hsb run-container -- "./hsb lint --install-dependencies; ./hsb lint"
+```
+
+If the tools are already installed locally:
 
 ```bash
 # Lint entire repository

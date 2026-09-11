@@ -11,7 +11,7 @@ A focused collection of reference applications, operators, and tutorials for [Ho
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Building](#build)
+- [Building](#building)
 - [Running](#running)
 - [Contributing](#contributing)
 - [More Information](#more-information)
@@ -35,6 +35,7 @@ Refer to the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) with buildx
 - `git`
+- Python 3.11–3.13 with `venv` and `pip` for the `./hsb` CLI
 - NVIDIA NGC credentials at [ngc.nvidia.com](https://catalog.ngc.nvidia.com/)
 
 #### Fetch
@@ -46,21 +47,52 @@ cd holoscan-sensor-bridge-hub
 
 See each project's `README.md` and `metadata.json` for dependencies and hardware requirements.
 
-#### Build
+## Building
+
+Use `./hsb` to discover, build, and run projects. On first use it installs
+`holoscan-cli[create]==5.0.0a1`, including template dependencies, into a managed
+virtual environment under `$XDG_CACHE_HOME/holoscan-cli/` or `~/.cache/holoscan-cli/`.
+An active virtual environment or `HOLOSCAN_CLI_PYTHON_BIN` selects an existing
+Python environment instead. Containers reuse the image's installed CLI.
+No virtual environment activation is needed.
+
+```sh
+./hsb --help
+./hsb list
+```
+
+The repository currently contains scaffolding templates; `list` will be empty
+until projects with `metadata.json` are added. Templates are excluded from discovery.
+See [Starting a New Project](./applications/README.md#starting-a-new-project) to
+generate a C++ or Python application with `./hsb create`.
 
 Build the default development container:
 
 ```sh
-docker build -t holoscan-sensor-bridge-hub:dev .
+./hsb build-container --dryrun --verbose
+./hsb build-container
 ```
 
-Or build a project-specific container using the Dockerfile path in that project's `metadata.json`.
+The wrapper defaults to Holoscan SDK 4.6.0 and lets the CLI select the CUDA tag.
+Use `--base-img <sdk-image>` to select the image required by your hardware or project.
+CLI and SDK image versions are configured independently.
+
+For a contributed project, use `./hsb build <project>`; the CLI reads the Dockerfile
+and dependencies from that project's `metadata.json`.
 
 See [`doc/developer.md`](./doc/developer.md) for native build and development details.
 
 ## Running
 
-Follow the instructions in each application's `README.md`. Applications typically define a run command in `metadata.json` that can be executed inside the development container.
+Open the development container with the repository mounted:
+
+```sh
+./hsb run-container --dryrun --verbose
+./hsb run-container
+```
+
+Run a contributed application with `./hsb run <project>`. Follow its `README.md`
+for sensor setup, data downloads, and hardware requirements.
 
 ## Contributing
 

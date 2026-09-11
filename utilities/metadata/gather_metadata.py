@@ -22,21 +22,10 @@ import logging
 import os
 from pathlib import Path
 
-try:
-    from utilities.metadata.utils import (
-        DEFAULT_INCLUDE_PATHS,
-        iter_metadata_paths,
-        list_normalized_languages,
-    )
-except ModuleNotFoundError:  # Allow running via `python utilities/metadata/gather_metadata.py`
-    import sys
+from holoscan_cli.metadata.gather_metadata import gather_metadata as collect_project_metadata
+from holoscan_cli.metadata.utils import list_normalized_languages
 
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from utilities.metadata.utils import (
-        DEFAULT_INCLUDE_PATHS,
-        iter_metadata_paths,
-        list_normalized_languages,
-    )
+DEFAULT_INCLUDE_PATHS = ("applications", "operators", "tutorials")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -56,26 +45,6 @@ def extract_readme(file_path):
                 return readme_file.read()
         else:
             return ""
-
-
-def extract_project_name(metadata_filepath: str) -> str:
-    """Extract the project name from the metadata.json file path.
-
-    HoloHub convention is such that a `metadata.json` file
-    must be located at either:
-    - the named project folder; or
-    - a language subfolder one level below the project folder.
-
-    The following are valid examples:
-    - applications/my_application/metadata.json -> my_application
-    - applications/nested/paths/my_application/cpp/metadata.json -> my_application
-    - workflows/my_workflow/metadata.json -> my_workflow
-
-    """
-    parts = metadata_filepath.split(os.sep)
-    if parts[-2] in ["cpp", "python", "py"]:
-        return parts[-3]
-    return parts[-2]
 
 
 def generate_build_and_run_command(entry: dict) -> str:
@@ -113,68 +82,16 @@ def _warn_duplicate_projects(metadata_entries: list[dict]) -> None:
                 seen[key] = source_folder
 
 
-def gather_metadata(repo_paths: list[str], exclude_paths: list[str] = None) -> list[dict]:
-    """
-    Collect project metadata from JSON files into a single dictionary
-
-    This function will return a list of dictionaries, each containing metadata for a project.
-
-    :input:
-        repo_path: str
-            The path to the repository to collect metadata from.
-        exclude_paths: list
-            A list of files to exclude from metadata collection.
-    :return:
-        A list of dictionaries, each containing metadata for a project.
-    """
-    SCHEMA_TYPES = [
-        "application",
-        "benchmark",
-        "gxf_extension",
-        "package",
-        "operator",
-        "tutorial",
-        "workflow",
-    ]
-
-    metadata = []
-
-    # Iterate over the found metadata files
-    for file_path in iter_metadata_paths(repo_paths, exclude_patterns=exclude_paths):
-        with open(file_path, "r") as file:
-            try:
-                entries = json.load(file)
-                entries = entries if type(entries) is list else [entries]
-
-                for data in entries:
-                    try:
-                        schema_type = next(key for key in data.keys() if key in SCHEMA_TYPES)
-                    except StopIteration:
-                        logger.error(
-                            'No valid schema type found in metadata file "%s". Available keys: %s',
-                            file_path,
-                            ", ".join(data.keys()),
-                        )
-                        continue
-
-                    data["project_type"] = schema_type
-                    data["metadata"] = data.pop(schema_type)
-
-                    readme = extract_readme(file_path)
-                    project_name = extract_project_name(file_path)
-                    source_folder = Path(file_path).parent
-                    data["readme"] = readme
-                    data["project_name"] = project_name
-                    data["source_folder"] = str(source_folder)
-                    if data["project_type"] in ["application", "benchmark", "workflow"]:
-                        command = generate_build_and_run_command(data)
-                        if command:
-                            data["build_and_run"] = command
-                    metadata.append(data)
-            except json.decoder.JSONDecodeError as e:
-                logger.error('Error parsing JSON file "%s": %s', file_path, e)
-                continue
-
+def gather_metadata(repo_paths: list[str], exclude_paths: list[str] | None = None) -> list[dict]:
+    """Add hub documentation fields to metadata discovered by Holoscan CLI."""
+    metadata = collect_project_metadata(repo_paths, exclude_paths)
+    for entry in metadata:
+        metadata_path = Path(entry["source_folder"]) / "metadata.json"
+        entry["readme"] = extract_readme(metadata_path)
+        if entry["project_type"] in ["application", "benchmark"]:
+            command = generate_build_and_run_command(entry)
+            if command:
+                entry["build_and_run"] = command
     return metadata
 
 
