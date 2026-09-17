@@ -1,4 +1,5 @@
-# SPDX-FileCopyrightText: Copyright (c) 2022-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Portions Copyright (c) 2024-2026, Analog Devices, Inc.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,5 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Register applications with add_holohub_application() (alphabetical order).
-add_holohub_application(adi)
+add_subdirectory(i2s)
+add_subdirectory(audio_waveform)
+add_subdirectory(audio_beamformer)
+add_subdirectory(audio_filewriter)
+add_subdirectory(app)
