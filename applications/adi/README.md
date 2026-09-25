@@ -1,144 +1,419 @@
-# ADI Sensors
+# Analog Devices Sensor Enablement for NVIDIA Holoscan Sensor Bridge
 
-ADI time-of-flight (ToF), industrial IMU, and A2B audio examples built with
-Holoscan Sensor Bridge (HSB). This directory provides a standalone CMake build
-and a Docker workflow. No Hub CLI is required.
+This directory contains Analog Devices (ADI) sensor integrations, GPU-accelerated operators, Python bindings, ROS2 applications, and reference pipelines for the NVIDIA® Holoscan Sensor Bridge ecosystem.
 
-The existing `./hsb` wrapper can also build the image and open a development
-container; both entry points use the same Dockerfile.
+The goal of these examples is to demonstrate how ADI sensing technologies can be seamlessly integrated into NVIDIA Holoscan workflows for real-time robotics, industrial automation, edge AI, autonomous systems, and multi-modal sensor fusion applications.
 
-## Source versions
+Current support includes:
 
-- HSB release **2.7.0**, commit `1df133d4c78a6921249be4b147d65554aa8efa68`.
-- ADI examples imported from
-  [sibsankardey/holoscan-sensor-bridge](https://github.com/sibsankardey/holoscan-sensor-bridge/tree/9c8221090c1e6174ddce79c05666d94a3c16c869/examples/adi),
-  commit `9c8221090c1e6174ddce79c05666d94a3c16c869`.
-- Container: Holoscan SDK **4.4.0**, CUDA **13**.
+- **3D Depth Sensing** using the **ADCAM3175-2M-EBZ** Time-of-Flight camera
+- **Industrial IMUs** including **ADIS16505** and upcoming **ADIS16607**
+- **Spatial Audio Processing** using **A2B® (AD2428/AD2427)** microphone systems
+- **ROS2 Integration**
+- **GPU-Accelerated Sensor Processing**
+- **Holoviz Visualization**
 
-The examples retain their original NVIDIA and Analog Devices license notices.
-Build integration changes are maintained in this directory.
+---
 
-## Build on x86_64
+# Supported Hardware
 
-Install Docker and the NVIDIA Container Toolkit. Run from the Hub repository root:
+| Category | Part Number | Status | Description | Product |
+|-----------|-------------|----------|-------------|-------------|
+| 3D Depth Camera | **ADCAM3175-2M-EBZ** | ✅ Supported | Time-of-Flight (ToF) 3D depth camera | https://www.analog.com/en/products/adtf3175.html |
+| Industrial IMU | **ADIS16505** | ✅ Supported | Precision industrial inertial measurement unit | https://www.analog.com/en/products/adis16505.html |
+| Industrial IMU | **ADIS16607** | ✅ Supported | Next-generation industrial inertial measurement unit | https://www.analog.com/en/products/adis16607.html |
+| A2B Audio | **AD2428 + AD2427** | ✅ Supported | Multi-channel microphone acquisition and transport | https://www.analog.com/en/products/ad2428.html |
+| Sensor Connectivity | Holoscan Sensor Bridge | ✅ Supported | FPGA-based sensor connectivity platform | Lattice & Microchip |
+| AI Compute | NVIDIA Jetson / IGX / Thor | ✅ Supported | GPU accelerated AI processing platforms | Jetson Thor/AGX Orix/ IGX/ DGX Spark |
 
-```sh
-docker build --progress=plain \
-  -f applications/adi/Dockerfile \
-  --build-arg CUDA_ARCHITECTURES=89 \
-  --build-arg BUILD_JOBS=4 \
-  -t hsb-adi:2.7.0 .
+---
+
+# Directory Structure
+
+```text
+examples/adi
+│
+├── aditof/                ADCAM3175-2M-EBZ 3D Depth Camera
+│
+├── adi_imu/               ADIS16505 / ADIS16607 IMU Support
+│
+├── a2baudio/              A2B Audio + Beamforming Pipeline
+│
+├── ros2_setup.sh          ROS2 Environment Setup
+│
+└── CMakeLists.txt
 ```
 
-Architecture `89` targets Ada GPUs. Set `CUDA_ARCHITECTURES` to the compute
-capability of your deployment GPU; building does not require GPU access.
-This Dockerfile targets x86_64 with CUDA 13. Jetson/IGX/ARM builds need a matching
-platform environment and are not covered by this container recipe.
+---
 
-The build prepares an HSB checkout in `/opt/hsb`, applies the two ADI patches,
-and compiles HSB and the ADI examples together. It installs the results under
-`/opt/adi/install`. Linux socket receivers are used; RoCE and DOCA are disabled
-by default so a ConnectX adapter is not needed to build or run the smoke checks.
+# Module 1 – ADCAM3175-2M-EBZ 3D Depth Camera
 
-## Verify the installation
+Directory:
 
-```sh
-docker run --rm --gpus all --ulimit stack=67108864 hsb-adi:2.7.0 \
-  ctest --test-dir /opt/adi/build --output-on-failure
-docker run --rm --gpus all --ulimit stack=67108864 hsb-adi:2.7.0 \
-  python3 /opt/adi/smoke_test.py
+```text
+aditof/
 ```
 
-These checks run the C++ and Python player help and import the installed
-Hololink and IMU bindings. They do not acquire sensor data. ROS2 is not installed in this image.
+## Overview
 
-## Optional HSB CLI
+This module enables the **ADCAM3175-2M-EBZ** 3D depth camera within the NVIDIA Holoscan environment.
 
-From the Hub repository root:
+The implementation includes:
 
-```sh
-adi_sdk_image=nvcr.io/nvidia/clara-holoscan/holoscan:v4.4.0-cuda13@sha256:7af522a5ab43f5be6503520dc2afda1f4690b55079ebaca125910a1ec0d3df19
-./hsb build-container adi --base-img "$adi_sdk_image" --img hsb-adi:2.7.0 --dryrun --verbose
-./hsb build-container adi --base-img "$adi_sdk_image" --img hsb-adi:2.7.0
-./hsb run-container adi --img hsb-adi:2.7.0 --no-docker-build --dryrun --verbose \
-  -- python3 /opt/adi/smoke_test.py
-./hsb run-container adi --img hsb-adi:2.7.0 --no-docker-build \
-  -- python3 /opt/adi/smoke_test.py
+- Camera discovery and configuration
+- Device control APIs
+- Calibration support
+- Frame capture
+- CUDA-based frame unpacking
+- Playback utilities
+- Firmware management
+- Sensor Bridge integration
+
+The module provides the foundation for building:
+
+- Spatial perception pipelines
+- Robotics vision systems
+- Obstacle detection
+- Human-machine interaction
+- Industrial inspection systems
+- SLAM and mapping applications
+
+## Key Components
+
+| Component | Description |
+|------------|------------|
+| adcam_lib | Camera control library |
+| adcam_unpack_op | GPU accelerated depth frame unpacking |
+| adcam_player | Playback utility |
+| adcam_calibration | Camera calibration support |
+| adsd3500_flash | Firmware flashing support |
+| programmer | Device programming utilities |
+
+---
+
+# Module 2 – Industrial IMU Integration
+
+Directory:
+
+```text
+adi_imu/
 ```
 
-The container already contains the built examples. To rebuild edited Hub
-sources in the mounted workspace:
+## Supported Devices
 
-```sh
-./hsb build adi --img hsb-adi:2.7.0 --no-docker-build --parallel 4 \
-  --configure-args=-DCMAKE_CUDA_ARCHITECTURES=89 --dryrun --verbose
-./hsb build adi --img hsb-adi:2.7.0 --no-docker-build --parallel 4 \
-  --configure-args=-DCMAKE_CUDA_ARCHITECTURES=89
+| Device | Status |
+|----------|--------|
+| ADIS16505 | ✅ Supported |
+| ADIS16607 | 🚧 Upcoming |
+
+## Overview
+
+This module integrates ADI industrial-grade inertial sensors into NVIDIA Holoscan.
+
+The implementation supports:
+
+- IMU acquisition
+- Python bindings
+- Holoscan operators
+- ROS2 publishing
+- Visualization workflows
+- Timestamp synchronization
+
+Measurements include:
+
+- Accelerometer data
+- Gyroscope data
+- Temperature
+- Sensor timestamps
+
+## Architecture
+
+```text
+ADIS16505 / ADIS16607
+          │
+          ▼
+    Sensor Bridge
+          │
+          ▼
+      Holoscan
+          │
+    ┌─────┴─────┐
+    ▼           ▼
+Processing    ROS2
+    │           │
+    ▼           ▼
+ Holoviz      RViz
 ```
 
-This uses the patched `/opt/hsb` dependency from the image. The standalone
-CMake workflow below can use a separately prepared checkout.
-The explicit base image keeps the CLI's repository-wide SDK default from
-overriding the version validated for these examples.
+## Key Components
 
-## Run with hardware
+| Component | Description |
+|------------|------------|
+| adi_imu_op | IMU acquisition operator |
+| adi_imu_ros2.py | ROS2 publisher application |
+| adi_imu_op_python | Python interface |
+| adi_imu_visualization.launch.py | RViz visualization support |
 
-Configure the host sensor network and firmware using the sensor-specific guide.
-Inspect the available options with:
+## Example Use Cases
 
-```sh
-docker run --rm -it --gpus all --network host hsb-adi:2.7.0 \
-  adcam_player --help
-docker run --rm -it --gpus all --network host hsb-adi:2.7.0 \
-  audio_viz_disp --help
+- Visual-Inertial Odometry (VIO)
+- Robot localization
+- Navigation
+- Sensor fusion
+- Mobility platforms
+- Humanoid robots
+- Autonomous Mobile Robots (AMRs)
+
+---
+
+# Module 3 – A2B Audio Processing Pipeline
+
+Directory:
+
+```text
+a2baudio/
 ```
 
-Use the options shown by each executable to select the sensor IP, operating
-mode, and headless/display behavior. Display output additionally needs the host
-display connection configured for Docker.
+## Overview
 
-- [ToF camera and firmware guide](aditof/README.md)
-- [IMU and ROS2 guide](adi_imu/README.adi_imu_ros.md)
-- [A2B audio guide](a2baudio/README.audio_viz_dsp.md)
+This module demonstrates a complete A2B audio acquisition and processing pipeline using ADI Audio Bus technology.
 
-The imported guides describe the original in-tree HSB layout. Use the build
-commands above for this Hub integration. In this image, their `examples/adi/`
-source paths correspond to `/opt/adi/`; C++ executables are already on `PATH`.
+Reference platform:
 
-## Build with a local HSB checkout
-
-Inside a compatible development environment containing the Dockerfile's dependencies:
-
-```sh
-python3 applications/adi/prepare_hsb.py build/adi-hsb-source
-cmake -S applications/adi -B build/adi-standalone -G Ninja \
-  -DHSB_SOURCE_DIR="$PWD/build/adi-hsb-source" \
-  -DCMAKE_CUDA_ARCHITECTURES=89 \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX="$PWD/install/adi-standalone"
-cmake --build build/adi-standalone --parallel 4
-cmake --install build/adi-standalone
-ctest --test-dir build/adi-standalone --output-on-failure
-PATH="$PWD/install/adi-standalone/bin:$PATH" \
-PYTHONPATH="$PWD/install/adi-standalone/python${PYTHONPATH:+:$PYTHONPATH}" \
-  python3 applications/adi/smoke_test.py
+```text
+AD2428 A2B Master
+         │
+         ▼
+AD2427 Microphone Node
+         │
+         ▼
+ 4-Microphone Array
+         │
+         ▼
+ Holoscan Sensor Bridge
+         │
+         ▼
+ NVIDIA GPU
 ```
 
-`prepare_hsb.py` clones the release into a new directory, verifies its commit,
-and applies the patch after `git apply --check`. Repeating it is supported.
-An existing checkout at a different revision is rejected without being reset.
-For development, `HSB_SOURCE_DIR` can point directly to your own patched HSB
-checkout; compatibility with other revisions must be checked by the developer.
+Captured audio streams are processed using GPU-accelerated operators for visualization, DSP, recording, and beamforming applications.
 
-## Hardware patches
+## Features
 
-[`patches/0001-adi-spi-gpio.patch`](patches/0001-adi-spi-gpio.patch) carries the
-changes from ADI's fork:
+- Multi-channel microphone capture
+- I2S audio reception
+- Real-time waveform rendering
+- FFT visualization
+- Digital beamforming
+- Audio recording
+- CUDA acceleration
+- Holoviz integration
 
-- Advertise 32 GPIOs for the hololink-lite enumeration strategy, including the
-  GPIO used for the Lattice camera reset.
-- Allow SPI command lengths below 64 bytes instead of below 16 bytes.
+## Key Components
 
-These are partner-specific changes to the cloned HSB dependency. Their use
-requires compatible FPGA firmware. They are not claims of upstream acceptance
-or validation across all HSB reference boards.
+### I2S Receiver
+
+```text
+i2s/
+```
+
+Receives audio streams from the Sensor Bridge.
+
+### Beamformer
+
+```text
+audio_beamformer/
+```
+
+CUDA accelerated audio beamformer.
+
+Features:
+
+- Multi-channel processing
+- Directional beam steering
+- Real-time operation
+- GPU acceleration
+
+### Waveform Generator
+
+```text
+audio_waveform/
+```
+
+Generates waveforms for real-time visualization.
+
+### Audio Recorder
+
+```text
+audio_filewriter/
+```
+
+Stores captured audio to disk.
+
+### Visualization Application
+
+```text
+app/audio_viz.cpp
+```
+
+Demonstrates:
+
+- Audio acquisition
+- Real-time DSP
+- FFT generation
+- Beamforming
+- Holoviz rendering
+
+## Example Robotics Applications
+
+- Voice-controlled robots
+- Human-robot interaction
+- Industrial acoustic monitoring
+- Sound source localization
+- Spatial audio systems
+- Voice analytics
+
+---
+
+# ROS2 Integration
+
+ROS2 support is provided for sensor visualization and interoperability.
+
+Components include:
+
+```text
+ros2_setup.sh
+
+adi_imu/
+ ├── adi_imu_ros2.py
+ └── adi_imu_visualization.launch.py
+```
+
+Typical capabilities:
+
+- Sensor publishers
+- ROS2 message generation
+- RViz visualization
+- Multi-sensor fusion workflows
+
+---
+
+# Build
+
+Same as docker build as pubmished in Holoscan Sensor Bridge github
+
+```bash
+docker/build.sh --<igpu or dgpu>
+```
+or
+
+From the root of the Holoscan Sensor Bridge workspace:
+
+```bash
+cmake -B build
+cmake --build build -j$(nproc)
+```
+
+or
+
+```bash
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+```
+
+---
+
+# Example Applications
+
+## 3D Depth Camera
+
+```bash
+python adcam_player.py
+```
+
+## IMU + ROS2
+
+```bash
+python adi_imu_ros2.py
+```
+
+Visualization (run in a separate shell and not in the container shell):
+
+```bash
+ros2 launch adi_imu_visualization.launch.py
+```
+
+## A2B Audio Visualization
+
+```bash
+audio_viz_display
+```
+
+---
+
+# Technology Stack
+
+- NVIDIA Holoscan
+- Holoscan Sensor Bridge
+- CUDA
+- C++
+- Python
+- ROS2
+- Holoviz
+- RViz
+- A2B Audio
+- Industrial IMUs
+- 3D Time-of-Flight Sensing
+
+---
+
+# Multi-Modal Sensor Fusion
+
+These examples demonstrate how multiple sensing modalities can be fused within a common Holoscan framework:
+
+```text
+3D Depth Camera
+       │
+       ▼
+      GPU
+       ▲
+       │
+Industrial IMU
+       │
+       ▼
+   Holoscan
+       ▲
+       │
+  A2B Audio
+```
+
+This enables development of advanced perception systems for:
+
+- Autonomous Mobile Robots (AMRs)
+- Humanoid Robotics
+- Industrial Automation
+- Spatial AI
+- Edge AI
+- Autonomous Systems
+
+These examples illustrate how Analog Devices sensing technologies are enabled in NVIDIA Holoscan AI workloads by enabling:
+
+- 3D Depth Perception
+- Industrial Inertial Sensing
+- Spatial Audio Processing
+- GPU Accelerated DSP
+- Real-Time Sensor Fusion
+
+Together, ADI sensors and NVIDIA accelerated computing provide a scalable platform for next-generation robotics and intelligent edge systems.
+
+---
+
+# License
+
+Refer to the main repository license and contributing guidelines for usage restrictions and contribution policies.
+
+# Support
+1. Reach out to FPGA vendor for getting access to RTL that supports ADCAM and other modules from Analog Devices
+2. Email Holo.Scan@analog.com if you need to reach Analog Devices Holoscan support
