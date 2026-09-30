@@ -305,6 +305,7 @@ Same as docker build as pubmished in Holoscan Sensor Bridge github
 ```bash
 docker/build.sh --<igpu or dgpu>
 ```
+
 or
 
 From the root of the Holoscan Sensor Bridge workspace:
@@ -415,5 +416,8 @@ Together, ADI sensors and NVIDIA accelerated computing provide a scalable platfo
 Refer to the main repository license and contributing guidelines for usage restrictions and contribution policies.
 
 # Support
+
 1. Reach out to FPGA vendor for getting access to RTL that supports ADCAM and other modules from Analog Devices
 2. Email Holo.Scan@analog.com if you need to reach Analog Devices Holoscan support
+
+<!-- markdownlint-configure-file { "MD024": false, "MD025": false, "MD034": false, "MD060": false } -->
