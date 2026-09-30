@@ -1,8 +1,9 @@
 # ADI ToF Camera Player (`adcam_player`)
 
 For the Hub build and validated container commands, start with the
-[ADI Sensors guide](../README.md). The hardware notes below originate from
-the ADI HSB fork; its container paths differ from this integration.
+[ADI Sensors build guide](../code_README.md). The hardware notes below originate
+from the ADI HSB fork; in the Hub container, their `examples/adi/` paths are
+under `/opt/adi/`.
 
 A Holoscan-based application for capturing, processing, and visualizing depth
 data from an ADI ADTF3175 Time-of-Flight camera connected via the Holoscan

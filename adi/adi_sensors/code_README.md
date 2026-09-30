@@ -33,7 +33,7 @@ capability of your deployment GPU; building does not require GPU access.
 This Dockerfile targets x86_64 with CUDA 13. Jetson/IGX/ARM builds need a matching
 platform environment and are not covered by this container recipe.
 
-The build prepares an HSB checkout in `/opt/hsb`, applies the two ADI patches,
+The build prepares an HSB checkout in `/opt/hsb`, applies the ADI hardware patch,
 and compiles HSB and the ADI examples together. It installs the results under
 `/opt/adi/install`. Linux socket receivers are used; RoCE and DOCA are disabled
 by default so a ConnectX adapter is not needed to build or run the smoke checks.
@@ -48,31 +48,50 @@ docker run --rm --gpus all --ulimit stack=67108864 hsb-adi:2.7.0 \
 ```
 
 These checks run the C++ and Python player help and import the installed
-Hololink and IMU bindings. They do not acquire sensor data. ROS2 is not installed in this image.
+Hololink and IMU bindings. They do not acquire sensor data. The image also
+includes ROS 2 Jazzy for the IMU example.
 
 ## Run with hardware
 
-Configure the host sensor network and firmware using the sensor-specific guide.
-Inspect the available options with:
-
-```sh
-docker run --rm -it --gpus all --network host hsb-adi:2.7.0 \
-  adcam_player --help
-docker run --rm -it --gpus all --network host hsb-adi:2.7.0 \
-  audio_viz_disp --help
-```
-
-Use the options shown by each executable to select the sensor IP, operating
-mode, and headless/display behavior. Display output additionally needs the host
-display connection configured for Docker.
+Configure the sensor, the Sensor Bridge, and the host network using the
+sensor-specific guide:
 
 - [ToF camera and firmware guide](aditof/README.md)
 - [IMU and ROS2 guide](adi_imu/README.md)
 - [A2B audio guide](a2baudio/README.md)
 
-The imported guides describe the original in-tree HSB layout. Use the build
-commands above for this Hub integration. In this image, their `examples/adi/`
-source paths correspond to `/opt/adi/`; C++ executables are already on `PATH`.
+Start the container with GPU and host network access:
+
+```sh
+docker run --rm -it --gpus all --network host --ulimit stack=67108864 hsb-adi:2.7.0
+```
+
+The container opens a shell in `/opt/adi` with ROS 2 set up. The C++ executables
+are on `PATH`. Inspect the options of each example with:
+
+```sh
+# ToF camera: C++ player and Python player
+adcam_player --help
+python3 /opt/adi/aditof/python/adcam_player.py --help
+
+# IMU: the ROS 2 node reads adi_imu_config.yaml from the current directory
+cd /opt/adi/adi_imu/app
+python3 adi_imu_ros2.py --help
+
+# A2B audio
+audio_viz_disp --help
+```
+
+Use the options shown by each executable to select the Sensor Bridge IP address
+(`192.168.0.2` by default), operating mode, and headless/display behavior.
+Without a Sensor Bridge, the examples exit with
+`Device with 192.168.0.2 not found`. Display output additionally needs the host
+display connection configured for Docker.
+
+The sensor-specific guides describe the original in-tree HSB layout. Use the
+build commands above for this Hub integration. In this image, their
+`examples/adi/` paths correspond to `/opt/adi/`, for example
+`/opt/adi/aditof/adi_manifest.yaml` for the ToF firmware update.
 
 ## Build with a local HSB checkout
 

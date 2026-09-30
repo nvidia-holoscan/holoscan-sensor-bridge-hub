@@ -31,7 +31,7 @@ Current support includes:
 # Directory Structure
 
 ```text
-examples/adi
+adi/adi_sensors
 │
 ├── aditof/                ADCAM3175-2M-EBZ 3D Depth Camera
 │
@@ -39,7 +39,11 @@ examples/adi
 │
 ├── a2baudio/              A2B Audio + Beamforming Pipeline
 │
-├── ros2_setup.sh          ROS2 Environment Setup
+├── patches/               ADI changes to HSB 2.7.0
+│
+├── Dockerfile             Builds HSB and the examples
+│
+├── code_README.md         Build, test, and run instructions
 │
 └── CMakeLists.txt
 ```
@@ -282,9 +286,8 @@ ROS2 support is provided for sensor visualization and interoperability.
 Components include:
 
 ```text
-ros2_setup.sh
-
-adi_imu/
+adi_imu/app/
+ ├── ros_setup.sh
  ├── adi_imu_ros2.py
  └── adi_imu_visualization.launch.py
 ```
@@ -300,56 +303,52 @@ Typical capabilities:
 
 # Build
 
-Same as docker build as pubmished in Holoscan Sensor Bridge github
+From the root of the Holoscan Sensor Bridge Hub repository, build the container. It clones HSB 2.7.0, applies the ADI patch in `patches/`, and builds HSB and the examples together:
 
 ```bash
-docker/build.sh --<igpu or dgpu>
+docker build -f adi/adi_sensors/Dockerfile \
+  --build-arg BASE_IMAGE=nvcr.io/nvidia/clara-holoscan/holoscan:v4.4.0-cuda13@sha256:7af522a5ab43f5be6503520dc2afda1f4690b55079ebaca125910a1ec0d3df19 \
+  --build-arg CUDA_ARCHITECTURES=89 \
+  -t hsb-adi:2.7.0 .
 ```
 
-or
-
-From the root of the Holoscan Sensor Bridge workspace:
-
-```bash
-cmake -B build
-cmake --build build -j$(nproc)
-```
-
-or
-
-```bash
-mkdir build
-cd build
-cmake ..
-make -j$(nproc)
-```
+Set `CUDA_ARCHITECTURES` to the compute capability of your GPU. See [code_README.md](code_README.md) to verify the build or to build against a local HSB checkout.
 
 ---
 
 # Example Applications
 
+Start the container with GPU and host network access:
+
+```bash
+docker run --rm -it --gpus all --network host --ulimit stack=67108864 hsb-adi:2.7.0
+```
+
+Run the examples in the container. Each connects to the Sensor Bridge at `192.168.0.2` by default.
+
 ## 3D Depth Camera
 
 ```bash
-python adcam_player.py
+python3 /opt/adi/aditof/python/adcam_player.py
 ```
 
 ## IMU + ROS2
 
 ```bash
-python adi_imu_ros2.py
+cd /opt/adi/adi_imu/app
+python3 adi_imu_ros2.py
 ```
 
-Visualization (run in a separate shell and not in the container shell):
+Visualization (run in a separate shell and not in the container shell), from the root of the Hub repository:
 
 ```bash
-ros2 launch adi_imu_visualization.launch.py
+ros2 launch adi/adi_sensors/adi_imu/app/adi_imu_visualization.launch.py
 ```
 
 ## A2B Audio Visualization
 
 ```bash
-audio_viz_display
+audio_viz_disp
 ```
 
 ---

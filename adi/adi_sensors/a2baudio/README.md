@@ -1,8 +1,9 @@
 # Acoustic Tracking & Beamforming Pipeline
 
 For the Hub build and validated container commands, start with the
-[ADI Sensors guide](../README.md). The hardware notes below originate from
-the ADI HSB fork; its container paths differ from this integration.
+[ADI Sensors build guide](../code_README.md). The hardware notes below originate
+from the ADI HSB fork; in the Hub container, their `examples/adi/` paths are
+under `/opt/adi/`.
 
 A real-time, GPU-accelerated digital signal processing (DSP) pipeline built on the Nvidia Holoscan SDK for the Jetson Orin AGX
 platform with Holoscan Sensor Bridge. This application ingests 4-channel raw I2S microphone data, performs Time Difference of
