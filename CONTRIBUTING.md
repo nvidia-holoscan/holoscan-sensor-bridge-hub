@@ -18,8 +18,6 @@ Holoscan Sensor Bridge Hub is a curated collection of integrations and sensor de
 
 This repository accepts reusable HSB integrations and sensor demos. Complete end-to-end Holoscan applications that are not centered on HSB belong in other Holoscan repositories, such as [Holohub](https://github.com/nvidia-holoscan/holohub).
 
-Changes to HSB itself, such as its host software, operators, FPGA IP, firmware, or emulator, belong in the [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge); see its [contributing guide](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/blob/main/CONTRIBUTING.md).
-
 Maintainers may decline a contribution based on scope, duplication, quality, dependencies, or missing ownership.
 
 ## Repository Organization
@@ -71,7 +69,7 @@ A `metadata.json` file is optional. If you add one, it must use exactly one of t
 
 ## Building on Holoscan Sensor Bridge
 
-The HSB repository and [user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction) cover most of what an integration needs:
+The [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) and [user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction) cover most of what an integration needs:
 
 - **Setup**: [Hardware setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/hardware-setup), [host setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/host-setup), [firmware setup](https://docs.nvidia.com/holoscan/sensor-bridge/firmware/firmware-setup), and [building the HSB container](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build), which most projects build and run in.
 - **Applications**: The HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples) and the [Applications](https://docs.nvidia.com/holoscan/sensor-bridge/applications/applications) guide show complete sensor pipelines in Python and C++.

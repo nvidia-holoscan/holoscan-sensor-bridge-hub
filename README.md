@@ -54,7 +54,7 @@ Many hooks fix issues in place; rerun `pre-commit run --all-files` until it pass
 
 ## Contributing
 
-Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for project requirements, ownership, and the review process. Changes to HSB itself belong in the [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge).
+Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for project requirements, ownership, and the review process.
 
 ## More Information
 
