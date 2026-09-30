@@ -6,7 +6,7 @@ Guidance for AI agents working in the **Holoscan Sensor Bridge Hub** repository.
 
 Projects live under `<org>/<category>/<project>/`, grouped by the organization that maintains them (for example, `nvidia/operators/<project>/`). Categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Create organization and category folders only when adding their first project, and start new projects from `nvidia/examples/template_app/` or `nvidia/operators/template_op/`.
 
-Projects build on [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB). Changes to HSB itself (host software, operators, FPGA IP, firmware, emulator) belong in the HSB repository, not here.
+Projects build on [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB).
 
 Each project builds on its own and documents its hardware, tested versions (including the HSB release), and build, run, and test commands in its `README.md`; `metadata.json` is optional. Shared, opt-in helpers (CMake modules, a development Dockerfile, metadata schemas and checks) and the lint settings live in `tools/`; only `.gitignore` and `.pre-commit-config.yaml` stay at the repository root.
 
