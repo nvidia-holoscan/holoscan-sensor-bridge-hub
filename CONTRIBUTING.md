@@ -1,58 +1,94 @@
 # Contributing to Holoscan Sensor Bridge Hub
 
-Welcome to **Holoscan Sensor Bridge Hub** — part of the NVIDIA Holoscan ecosystem. This guide covers contributions to this repository: **applications**, **operators**, and **tutorials** for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O.
-
-For **workflows**, **benchmarks**, **GXF extensions**, or **Debian packages**, contribute to the main [Holohub repository](https://github.com/nvidia-holoscan/holohub) instead. Shared conventions (metadata, linting, CMake macros) are the same across both repos; see also [Holohub CONTRIBUTING](https://github.com/nvidia-holoscan/holohub/blob/main/CONTRIBUTING.md).
-
-## Quick Start
-
-New to HoloHub? Follow these steps:
-
-1. **Understand this hub**: Read our [README](./README.md) — Holoscan Sensor Bridge Hub, part of Holohub
-2. **Determine your contribution type**: Use our [decision guide](#types-of-contributions) below
-3. **Set up your development environment**: Follow the [developer process](#developer-process)
-4. **Prepare your submission**: Use our [submission guidelines](#preparing-your-submission)
-5. **Review the checklist**: Complete our [contribution checklist](#contribution-checklist)
-6. **Submit for review**: Create a pull request following our [process](#developer-process)
+Holoscan Sensor Bridge Hub is a curated collection of integrations and sensor demos for [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB) from NVIDIA and ecosystem partners. NVIDIA maintainers decide which contributions to accept, and contributors maintain the projects they add.
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Introduction](#introduction)
-- [Types of Contributions](#types-of-contributions)
-- [Readiness Assessment](#readiness-assessment)
+- [What Belongs Here](#what-belongs-here)
+- [Repository Organization](#repository-organization)
+- [Project Requirements](#project-requirements)
+- [Building on Holoscan Sensor Bridge](#building-on-holoscan-sensor-bridge)
+- [Ownership and Review](#ownership-and-review)
 - [Developer Process](#developer-process)
-- [Preparing Your Submission](#preparing-your-submission)
-- [Build System Integration](#build-system-integration)
-- [Contribution Checklist](#contribution-checklist)
-- [Code Quality and Standards](#code-quality-and-standards)
-  - [Linting](#linting-and-code-quality)
-  - [Testing](#testing)
-  - [Unit Testing Python Operators](#unit-testing-python-operators)
-- [Development Tools](#development-tools)
-  - [Debugging](#debugging-and-performance)
-  - [Performance](#performance)
-- [Getting Help](#getting-help)
-  - [Troubleshooting](#troubleshooting)
-  - [Reporting Issues](#reporting-issues)
+- [Code Quality](#code-quality)
+- [Signing Your Work](#signing-your-work)
+- [Reporting Issues](#reporting-issues)
 
-## Introduction
+## What Belongs Here
 
-Holoscan Sensor Bridge Hub is a focused slice of the Holoscan ecosystem for Sensor Bridge–related applications, operators, and tutorials. Your contributions help developers build low-latency sensor I/O and GPU-resident pipelines on Holoscan.
+This repository accepts reusable HSB integrations and sensor demos. Complete end-to-end Holoscan applications that are not centered on HSB belong in other Holoscan repositories, such as [Holohub](https://github.com/nvidia-holoscan/holohub).
 
-Whether you're fixing a bug, adding a feature, or sharing a new reference project, this guide (and Holohub's shared tooling) will help you contribute effectively.
+Changes to HSB itself, such as its host software, operators, FPGA IP, firmware, or emulator, belong in the [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge); see its [contributing guide](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/blob/main/CONTRIBUTING.md).
+
+Maintainers may decline a contribution based on scope, duplication, quality, dependencies, or missing ownership.
+
+## Repository Organization
+
+Place each project in `<org>/<category>/<project>/`, where `<org>` is the organization that maintains it, such as `nvidia`, `adi`, or `altera`, and `<category>` is one of:
+
+| Category | Contents |
+| --- | --- |
+| `operators` | Reusable Holoscan operators |
+| `examples` | Example applications |
+| `demos` | Sensor and system demos |
+| `fpga` | FPGA designs, one folder per platform |
+| `ai/skills` | AI agent skills |
+| `benchmarks` | Benchmarks |
+| `tutorials` | Tutorials and how-to guides |
+| `utilities` | Utilities and tools |
+
+- Create organization and category folders only when you add their first project.
+- Each project has one primary owner, who may differ from the hardware vendor.
+- Shared, opt-in helpers live in [`tools/`](./tools/README.md).
+
+## Project Requirements
+
+Start from the [application template](./nvidia/examples/template_app/) or the [operator template](./nvidia/operators/template_op/). Every project must meet these requirements:
+
+- **Builds independently**: The project has its own build files, such as `CMakeLists.txt`, a `Dockerfile`, or `requirements.txt`, and does not depend on other projects in this repository.
+- **Uses an HSB release**: The project builds against a tagged [HSB release](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/releases), for example inside the HSB container, rather than a copy of the HSB source. If it needs changes to HSB, keep them as patches against that release and describe them in the README.
+- **README**: The project's `README.md` covers its purpose, hardware, tested configuration, setup, build, run, and test commands, expected output, limitations, license, and support contact. The templates show each section.
+- **Tested configuration**: The README states the exact versions the project was last tested with, including the HSB release, Holoscan SDK, the developer kit, the operating system (JetPack, IGX OS, or Ubuntu), the FPGA bitstream, and sensor firmware.
+- **License**: Contributions are licensed under the Apache License 2.0. Contributors may retain copyright. Start each source file with an SPDX header, for example:
+
+  ```text
+  SPDX-FileCopyrightText: Copyright (c) 2026, Your Organization. All rights reserved.
+  SPDX-License-Identifier: Apache-2.0
+  ```
+
+- **Sign-off**: Every commit is [signed off](#signing-your-work).
+
+A `metadata.json` file is optional. If you add one, it must use exactly one of the `application`, `operator`, `tutorial`, or `benchmark` keys and match the corresponding schema in [`tools/metadata/`](./tools/metadata/). CI validates it; see [Metadata Checks](./tools/README.md#metadata-checks).
+
+### License and Legal Guidelines
+
+- **Open Source Compatibility**: Ensure you have rights to contribute your work
+- **License Compliance**: All contributions inherit the Apache 2.0 license
+- **Patent Considerations**: Verify no patent conflicts are introduced
+- **Contribution Signing**: All commits must be signed-off (see [signing requirements](#signing-your-work))
+
+> **Note**: NVIDIA is not responsible for conflicts resulting from community contributions.
+
+## Building on Holoscan Sensor Bridge
+
+The HSB repository and [user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction) cover most of what an integration needs:
+
+- **Setup**: [Hardware setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/hardware-setup), [host setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/host-setup), [firmware setup](https://docs.nvidia.com/holoscan/sensor-bridge/firmware/firmware-setup), and [building the HSB container](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build), which most projects build and run in.
+- **Applications**: The HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples) and the [Applications](https://docs.nvidia.com/holoscan/sensor-bridge/applications/applications) guide show complete sensor pipelines in Python and C++.
+- **New sensors**: The [New Sensors](https://docs.nvidia.com/holoscan/sensor-bridge/applications/new-sensors) guide and the Hololink module [application](https://docs.nvidia.com/holoscan/sensor-bridge/applications/hololink-module-application-tutorial) and [device driver](https://docs.nvidia.com/holoscan/sensor-bridge/applications/hololink-module-device-driver-tutorial) tutorials explain how to add a sensor.
+- **Testing without hardware**: The [HSB emulator](https://docs.nvidia.com/holoscan/sensor-bridge/emulation/hsb-emulator) exercises HSB operators without a sensor bridge board.
+- **AI skills**: The HSB [agent skills](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/skills) are examples for the `ai/skills` category.
+- **Release changes**: Check the HSB [release notes](https://docs.nvidia.com/holoscan/sensor-bridge/support/release-notes) when moving a project to a newer HSB release.
+
+## Ownership and Review
+
+- Contributors maintain their projects and respond to user reports about them.
+- Maintainers mark inactive projects as unmaintained, and may de-list or archive them.
+- Hosting a project here does not imply NVIDIA certification or maintenance.
+- Every pull request needs approval from an NVIDIA maintainer. The project's contributor reviews technical changes to it.
+- CI runs basic checks only: linting, copyright headers and internal artifacts, links, and `metadata.json` validation. CI does not build or test contributed projects; contributors test them on the hardware listed in their README.
 
 ## Developer Process
-
-### Prerequisites
-
-Before getting started:
-
-1. Review [HoloHub prerequisites](./README.md#prerequisites)
-2. Ensure you have Git and required development tools installed
-3. Familiarize yourself with GitHub's [starting documentation](https://docs.github.com/en/get-started/start-your-journey) if you're new to GitHub
-
-### Step-by-Step Process
 
 1. **Fork the Repository**
 
@@ -73,18 +109,18 @@ Before getting started:
 
 3. **Develop Your Contribution**
 
-   - Follow the specific guidelines for your [contribution type](#types-of-contributions)
-   - If you are developing a new application, copy from the `template/` folder under the appropriate component directory to scaffold the initial project structure.
-   - Ensure your code meets [HoloHub standards](#preparing-your-submission)
-   - Test your changes locally
+   - Copy a template to `<org>/<category>/<project>/`
+   - Meet the [project requirements](#project-requirements)
+   - Build and test the project on the configuration listed in its README
 
-4. **Commit and Push Changes**
+4. **Lint, Commit, and Push**
 
    ```bash
-   # Stage your changes
-   git add .
+   # Run the lint checks
+   pre-commit run --all-files
 
    # Commit with sign-off (required)
+   git add <org>/<category>/<project>
    git commit -s -m "Add your descriptive commit message"
 
    # Push to your fork
@@ -93,348 +129,29 @@ Before getting started:
 
 5. **Create Pull Request**
 
-   - Navigate to your fork on GitHub
-   - [Create a Pull Request](https://help.github.com/en/articles/creating-a-pull-request) to merge your branch into the upstream repository
-   - Ensure you select the correct source and target branches
-   - Fill out the PR template completely
+   - [Create a Pull Request](https://help.github.com/en/articles/creating-a-pull-request) from your branch to the upstream `main` branch
+   - Describe the contribution, its tested configuration, and who maintains it
 
 6. **Review Process**
 
-   - HoloHub maintainers will review your PR
+   - NVIDIA maintainers will review your PR
    - Address any feedback or requested changes
    - Once approved, your contribution will be merged
 
 Thanks in advance for your patience as we review your contributions. We do appreciate them!
 
-## Types of Contributions
+## Code Quality
 
-Choose the right contribution type based on what you want to share. **In this repository**, accept:
+### Linting
 
-| Type | Directory |
-| --- | --- |
-| Application | `applications/` |
-| Operator | `operators/` |
-| Tutorial | `tutorials/` |
+Install the lint tools and run all checks from the repository root:
 
-Submit **workflows**, **benchmarks**, **GXF extensions**, and **packages** to [Holohub](https://github.com/nvidia-holoscan/holohub), not here.
-
-### Decision Tree
-
-```text
-What are you contributing?
-├── 🔄 Complete end-to-end pipeline (sensor → insight)?
-│   └── → Submit as a "Workflow" in Holohub (github.com/nvidia-holoscan/holohub)
-├── 🎯 Focused application for a Sensor Bridge / sensor I/O use case?
-│   └── → Submit as an "Application" in this repo
-├── 🧩 Reusable component for multiple use cases?
-│   └── → Submit as an "Operator" (+ demo application) in this repo
-├── 📚 Educational content or tutorial?
-│   └── → Submit as a "Tutorial" in this repo
-└── 🔧 Bug fix or enhancement to existing code?
-    └── → Submit a "Pull Request"
+```bash
+python3 -m pip install -r tools/lint/requirements.txt
+pre-commit run --all-files
 ```
 
-## Preparing Your Submission
-
-We request that members follow the guidelines in this document to make sure new submissions can be easily used by others.
-
-### Required Components
-
-A typical submission consists of:
-
-- **Code**: Application, workflow, operator, and/or tutorial code using the Holoscan SDK
-- **Metadata**: A [`metadata.json`](#metadata-description) file
-- **Documentation**: A [README](#readme-file) file describing the contribution
-
-### Readiness Assessment
-
-**✅ Ready to submit:**
-
-- Feature-complete and tested code
-- Documentation included
-- Follows HoloHub standards
-- Submit a PR and request review from `@nvidia-holoscan/holohub`
-
-**🚧 Work in progress:**
-
-- Fork HoloHub for development
-- Submit a "Draft PR" as early as possible
-- Call `@nvidia-holoscan/holohub` in the comments if you need to discuss anything.
-
-### Acceptance Criteria
-
-For a submission to be accepted into HoloHub it must meet these criteria:
-
-- ✅ Clearly demonstrates added value to the Holoscan community
-- ✅ Receives approval from at least one HoloHub maintainer
-- ✅ [Code linting](#linting-and-code-quality) tests pass
-- ✅ Any new [code tests](#testing) pass
-- ✅ Includes proper documentation and metadata
-- ✅ Follows naming conventions and coding standards
-
-### Metadata description
-
-Every application and operator should have an associated `metadata.json` file describing features and dependencies.
-
-Schemas are available for different contribution types:
-
-- Applications, operators, and tutorials use the schemas shipped with the pinned
-  [Holoscan CLI](https://github.com/nvidia-holoscan/holoscan-cli/tree/v5.0.0a1/src/holoscan_cli/metadata).
-  `./hsb version --json` reports the installed package location; its `metadata/`
-  directory contains the exact schemas used by this hub.
-
-#### Example metadata.json Structure
-
-```json
-// Main json definition for application or operator
-"application|operator": {
-    // Explicit name of the contribution
-    "name": "explicit name of the application/operator",
-    // Author(s) of the contribution
-    "authors": [
-      {
-        "name": "Your Name",
-        "affiliation": "Your Organization"
-      }
-    ],
-    // Supported language
-    // If multiple languages are supported, create a directory per language and a json file accordingly
-    "language": "C++|Python|GXF",
-    // Version of the contribution
-    "version": "Version of the contribution in the form: major.minor.patch",
-    // Change log
-    "changelog": {
-        "X.X": "Short description of the changes"
-    },
-    "holoscan_sdk": {
-        // Minimum supported holoscan version
-        "minimum_required_version": "0.6.0",
-        // All versions of Holoscan SDK tested for this operator/application
-        "tested_versions": [
-            "0.6.0"
-        ]
-    },
-    // Supported platforms
-    "platforms": ["x86_64", "aarch64"],
-    // Free-form tags for referencing the contribution
-    "tags": ["Endoscopy", "Video Encoding"],
-    // Ranking of the contribution. See below for ranking meaning
-    "ranking": 4,
-    // Dependencies for the current contribution
-    "dependencies": {
-        "operators": [{
-            "name": "mydependency",
-            "version": "x.x.x"
-        }
-        ]
-    },
-    // Command to run/test the contribution. This is valid for applications.
-    // This command is used by the main run script to test the application/
-    // Use the <holohub_data_dir> for referencing the data directory
-    // "workdir" specifies the working directory and can be holohub_app_bin, holohub_app_source or holohub_bin
-    "run": {
-        "command": "./myapplication --data <holohub_data_dir>/mydata",
-        "workdir": "holohub_app_bin|holohub_app_source|holohub_bin"
-    }
-}
-```
-
-In the `metadata.json` file, the `workdir` is where the run command is executed from. The following directories can be referenced:
-
-- `holohub_app_bin`: The directory containing the built application binary (e.g. `<holohub_root>/build/myapp/applications/myapp/cpp`)
-- `holohub_app_source`: The directory containing the source code of the application (e.g. `<holohub_root>/applications/myapp/cpp/`)
-- `holohub_bin`: The root build directory containing built binaries (e.g. `<holohub_root>/build/`)
-- `holohub_data_dir`: The directory containing the data for the application (e.g. `<holohub_root>/data/`)
-
-#### Ranking Levels for metadata.json
-
-Please provide a self-assessment of your HoloHub contribution according to these levels:
-
-| Level | Description | Requirements |
-| --- | --- | --- |
-| **0** | Production-ready, SDK-level quality | • Widespread community dependence. • Above 90% code coverage. • Nightly testing monitored. • All Level 1 requirements |
-| **1** | Very high-quality code | • Meets all Holoscan SDK coding standards. • Builds on all platforms within 1 month of releases. • 75% code coverage. • Continuous integration testing. • All Level 2 requirements |
-| **2** | Quality code | • Compiles on community platforms. • May have specific external dependencies. • Tests pass on supported platforms. • All Level 3 requirements |
-| **3** | Features under development | • Builds on specific platforms/configurations. • Some tests passing on supported platforms. • All Level 4 requirements |
-| **4** | Code of unknown quality | • Builds on specific platforms/configurations. • Minimal test coverage |
-| **5** | Deprecated | • Known to be of limited utility. • May have known bugs |
-
-### README File
-
-Include a comprehensive `README.md` file with:
-
-- **Purpose**: Clear description of what your contribution does
-- **Usage**: How to build, run, and use your contribution
-- **Requirements**: Dependencies and system requirements
-- **Examples**: Code samples or usage examples where applicable
-- **Architecture**: High-level design overview (for complex contributions)
-
-Use the [terms defined in the glossary](README.md#Glossary) when referring to HoloHub-specific locations.
-
-### Directory Structure
-
-All contributions should follow consistent directory structures based on their type:
-
-#### Operators
-
-```text
-holoscan-sensor-bridge-hub/operators/your_operator_name/
-├── metadata.json                   # Required: follows operator schema
-├── README.md                       # Required: describes purpose and usage
-├── your_operator_name.py|.cpp|.hpp # Main operator implementation
-├── test_your_operator_name.py      # Required for Python operators
-└── CMakeLists.txt                  # If needed for C++ operators
-```
-
-#### Applications
-
-```text
-holoscan-sensor-bridge-hub/applications/your_app_name/
-├── metadata.json                   # Required: follows application schema
-├── README.md                       # Required: describes purpose and architecture
-├── your_app_name.py|.cpp           # Main application code
-└── CMakeLists.txt                  # For build system integration
-```
-
-#### Workflows (Holohub only — not this repo)
-
-Contribute workflows to [Holohub](https://github.com/nvidia-holoscan/holohub):
-
-```text
-holohub/workflows/your_workflow_name/
-├── metadata.json                   # Required: follows workflow schema
-├── README.md                       # Required: describes workflow purpose
-├── your_workflow_name.py|.cpp      # Main application code
-└── CMakeLists.txt                  # For build system integration
-```
-
-#### GXF Extensions (Holohub only — not this repo)
-
-Contribute GXF extensions to [Holohub](https://github.com/nvidia-holoscan/holohub):
-
-```text
-holohub/gxf_extensions/your_extension_name/
-├── metadata.json                   # Required: follows extension schema
-├── README.md                       # Required: describes extension purpose
-├── your_extension.cpp              # Main extension implementation
-├── your_extension.hpp              # Header files
-└── CMakeLists.txt                  # Required for build system
-```
-
-#### Tutorials
-
-```text
-holoscan-sensor-bridge-hub/tutorials/your_tutorial_name/
-├── README.md                       # Required: tutorial content and objectives
-├── metadata.json                   # Optional: follows tutorial schema
-├── tutorial_code.py|.cpp           # Tutorial implementation
-└── assets/                         # Optional: images, diagrams, etc.
-```
-
-#### Packages (Holohub only — not this repo)
-
-Contribute Debian packages to [Holohub](https://github.com/nvidia-holoscan/holohub):
-
-```text
-holohub/pkg/your_package_name/
-├── CMakeLists.txt                  # Required: package configuration
-└── README.md                       # Optional: package description
-```
-
-### Naming Conventions
-
-For an operator named "Adaptive Thresholding":
-
-| Component | Convention | Example |
-| --- | --- | --- |
-| Class Name | TitleCase + "Op" suffix | `AdaptiveThresholdingOp` |
-| metadata.json "name" | Same as class name | `AdaptiveThresholdingOp` |
-| Directory | snake_case | `adaptive_thresholding` |
-| Filename | Same as directory + extension | `adaptive_thresholding.py` |
-| README Title | Title Case + "Operator" | "Adaptive Thresholding Operator" |
-| Unit Test | "test_" + directory name | `test_adaptive_thresholding.py` |
-
-### Build System Integration
-
-All contributions that include code need to be integrated with HoloHub's build system using CMake. Edit the appropriate `CMakeLists.txt` to add your contribution:
-
-**For Operators:**
-
-```cmake
-# In ./operators/CMakeLists.txt
-add_holohub_operator(my_operator DEPENDS EXTENSIONS my_extension)
-```
-
-If the operator wraps a GXF extension then the optional `DEPENDS EXTENSIONS` should be added to tell the build system to build the dependent extension(s).
-
-**For Extensions:**
-
-```cmake
-# In ./gxf_extensions/CMakeLists.txt
-add_holohub_extension(my_extension)
-```
-
-**For Applications:**
-
-```cmake
-# In ./applications/CMakeLists.txt
-add_holohub_application(my_application DEPENDS
-                        OPERATORS my_operator1 my_operator2)
-```
-
-If the application relies on one or more operators then the optional `DEPENDS OPERATORS` should be added so that
-the build system knows to build the dependent operator(s).
-
-**For Workflows:**
-
-```cmake
-# In ./workflow/CMakeLists.txt
-add_holohub_application(my_workflow DEPENDS
-                        OPERATORS my_operator1 my_operator2)
-```
-
-If the workflow relies on one or more operators then the optional `DEPENDS OPERATORS` should be added so that
-the build system knows to build the dependent operator(s).
-
-**For Packages:**
-
-**CMake Configuration:**
-
-```cmake
-# In ./pkg/my_package/CMakeLists.txt
-holohub_configure_deb(
-  NAME "my-package-dev"
-  COMPONENTS "my-headers" "my-libs"  # optional
-  DESCRIPTION "My project description"
-  VERSION "1.0.0"
-  VENDOR "Your Organization"
-  CONTACT "Your Name <your.email@example.com>"
-  DEPENDS "libc6 (>= 2.34), libstdc++6 (>= 11)"
-  SECTION "devel"      # optional
-  PRIORITY "optional"  # optional
-)
-```
-
-**Package Registration:**
-
-```cmake
-# In ./pkg/CMakeLists.txt
-add_holohub_package(my_packager
-                    APPLICATIONS my_app1
-                    OPERATORS my_op1 my_op2)
-```
-
-**Prerequisites:**
-Ensure your CMake targets have `install` rules defined. Use `COMPONENT` to control packaging granularity.
-
-### License and Legal Guidelines
-
-- **Open Source Compatibility**: Ensure you have rights to contribute your work
-- **License Compliance**: All contributions inherit the Apache 2.0 license
-- **Patent Considerations**: Verify no patent conflicts are introduced
-- **Contribution Signing**: All commits must be signed-off (see [signing requirements](#signing-your-work)
-
-> **Note**: NVIDIA is not responsible for conflicts resulting from community contributions.
+Many hooks fix issues in place. Rerun `pre-commit run --all-files` until it passes.
 
 ### Coding Guidelines
 
@@ -444,7 +161,7 @@ Ensure your CMake targets have `install` rules defined. Use `COMPONENT` to contr
 - **Code Documentation**: Include inline comments for complex logic
 - **Error Handling**: Implement appropriate error handling and validation
 
-### Signing Your Work
+## Signing Your Work
 
 - We require that all contributors "sign-off" on their commits. This certifies that the contribution is your original work, or you have rights to submit it under the same license, or a compatible license.
 
@@ -503,279 +220,14 @@ Ensure your CMake targets have `install` rules defined. Use `COMPONENT` to contr
 
 > **Important**: Contributions without proper sign-off will not be accepted.
 
-## Contribution Checklist
+## Reporting Issues
 
-Before submitting your contribution, ensure you've completed:
-
-### Pre-Submission Checklist
-
-- [ ] **Code Quality**
-  - [ ] Code follows Holoscan SDK coding standards
-  - [ ] All linting checks pass (`pre-commit run --all-files`)
-  - [ ] Code is properly documented with clear comments
-  - [ ] Error handling is implemented appropriately
-
-- [ ] **Testing**
-  - [ ] Code builds successfully on target platforms
-  - [ ] All existing tests still pass
-  - [ ] New functionality includes appropriate tests
-  - [ ] Python operators include unit tests (if applicable)
-
-- [ ] **Documentation**
-  - [ ] `README.md` is comprehensive and well-written
-  - [ ] `metadata.json` is complete and follows the correct schema
-  - [ ] Code examples and usage instructions are included
-  - [ ] Architecture or design decisions are documented
-
-- [ ] **Legal and Compliance**
-  - [ ] All commits are signed-off (`git commit -s`)
-  - [ ] No license or patent conflicts introduced
-  - [ ] Code is original work or properly attributed
-
-- [ ] **Integration**
-  - [ ] Follows HoloHub naming conventions
-  - [ ] Properly integrated with build system (CMakeLists.txt updated)
-  - [ ] Dependencies are correctly specified
-  - [ ] Can be built and run following provided instructions
-
-### Submission Checklist
-
-- [ ] **GitHub Workflow**
-  - [ ] Forked the upstream repository
-  - [ ] Created a descriptive feature branch
-  - [ ] Pull request targets the correct base branch
-  - [ ] PR description clearly explains the contribution
-
-- [ ] **Review Readiness**
-  - [ ] Code is ready for review (not work-in-progress)
-  - [ ] All CI/CD checks pass
-  - [ ] Requested review from appropriate maintainers (@nvidia-holoscan/holohub)
-
-## Code Quality and Standards
-
-### Linting and Code Quality
-
-HoloHub enforces code quality through automated linting checks that run in CI/CD pipelines.
-
-#### Installing Lint Tools
-
-```bash
-python -m pip install -r utilities/requirements.lint.txt pre-commit
-sudo apt-get install -y clang-format
-```
-
-#### Running Lint Checks
-
-Use the development container to install and run the lint tools:
-
-```bash
-./hsb run-container --dryrun --verbose -- "./hsb lint --install-dependencies; ./hsb lint"
-./hsb run-container -- "./hsb lint --install-dependencies; ./hsb lint"
-```
-
-If the tools are already installed locally:
-
-```bash
-# Lint entire repository
-pre-commit run --all-files
-```
-
-#### Fixing Common Lint Issues
-
-Many hooks auto-fix on run. Re-run `pre-commit run --all-files` after fixes are applied.
-
-### Testing
-
-#### Integration tests
-
-Each operator should have at least one associated [application](./applications/) demonstrating its capabilities.
-
-#### Writing Tests
-
-Applications should include a testing section in their `CMakeLists.txt` for functional testing. HoloHub uses [CTest](https://cmake.org/cmake/help/latest/manual/ctest.1.html) for automated testing.
-
-#### Running Tests
-
-```bash
-cmake -B build -S . -DAPP_<project>=ON -DBUILD_TESTING=ON
-cmake --build build
-cd build && ctest
-```
-
-### Unit Testing Python Operators
-
-HoloHub strongly encourages unit tests for Python operators.
-
-#### Testing Framework and Structure
-
-- **Framework**: Use `pytest`
-- **File Location**: Same directory as operator: `test_<operator_name>.py`
-- **Fixtures**: Reuse common fixtures from `conftest.py`
-
-#### Required Test Categories
-
-1. **Initialization Tests**: Verify operator creation and properties
-2. **Port Setup Tests**: Ensure input/output ports are configured correctly
-3. **Error Handling Tests**: Test invalid arguments using `pytest.raises`
-4. **Compute Logic Tests**: Test main functionality with various inputs
-5. **Edge Case Tests**: Cover boundary conditions and error scenarios
-
-#### Example Test Structure
-
-```python
-import pytest
-from .my_operator import MyOperatorOp
-from holoscan.core import Operator, _Operator as BaseOperator
-
-
-def test_my_operator_init(fragment):
-    name = "myoperator_op"
-    op = MyOperatorOp(fragment=fragment, name=name, tensor_name="image")
-    assert isinstance(op, BaseOperator), "MyOperator should be a Holoscan operator"
-    assert op.operator_type == Operator.OperatorType.NATIVE, "Operator type should be NATIVE"
-    assert f"name: {name}" in repr(op), "Operator name should appear in repr()"
-
-@pytest.mark.parametrize("shape", [(32, 32, 3), (16, 16, 1)])
-def test_my_operator_compute(fragment, op_input_factory, op_output, execution_context, mock_image, shape):
-    image = mock_image(shape)
-    op_input = op_input_factory(image, tensor_name="image", port="in")
-    op = MyOperatorOp(fragment=fragment, tensor_name="image")
-    op.compute(op_input, op_output, execution_context)
-    out_msg, out_port = op_output.emitted
-    assert out_port == "out"
-    assert out_msg["image"].shape == shape
-    # the rest of compute logic that covers the main functionality of the operator
-
-def test_my_operator_invalid_param(fragment):
-    with pytest.raises(ValueError):
-        MyOperatorOp(fragment=fragment, tensor_name="image", invalid_param=-1)
-
-# Add as many test cases as needed to cover all the functionality of the operator and the edge cases.
-```
-
-#### Running Python Unit Tests
-
-```bash
-# From repository root
-pytest operators/<your_operator_dir>/
-
-# Run with coverage
-pytest --cov=operators/<your_operator_dir>/ operators/<your_operator_dir>/
-
-# Run with verbose output
-pytest -v operators/<your_operator_dir>/
-```
-
-#### Best Practices
-
-- **Test Isolation**: Keep tests independent and isolated
-- **Descriptive Names**: Use clear, descriptive test function names
-- **Assertion Messages**: Include helpful assertion messages
-- **Parameterized Tests**: Use `@pytest.mark.parametrize` for multiple scenarios
-- **Fixture Reuse**: Leverage common fixtures from `conftest.py`
-- **Edge Cases**: Test boundary conditions and error scenarios
-- **Documentation**: Add docstrings explaining test purpose
-
-For examples, see existing test files like:
-
-- `operators/deidentification/pixelator/test_pixelator.py`
-- `conftest.py` for available fixtures
-
-## Development Tools
-
-### Debugging and Performance
-
-#### Debugging Resources
-
-**Holoscan SDK Documentation:**
-
-- [Debugging Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/holoscan_debugging.html) - Common debugging scenarios, crashes, profiling
-- [Logging Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/holoscan_logging.html) - Runtime logging setup
-
-**Development Environment:**
-
-- VSCode Dev Container support available in Holoscan SDK
-**Debugging Tools:**
-
-- **C++ Applications**: Use `gdb` for tracing and debugging
-- **Python Applications**: Use `pdb` for interactive debugging
-- **Application Profiling**: Various profiling tools discussed in SDK guide
-- **Code Coverage**: Tools for inspecting test coverage
-
-> **Note**: HoloHub doesn't provide a single debugging container due to the variety of methods across applications. Open an issue if you need additional debugging tools.
-> **Note**: Refer to [Holoscan SDK debugging documentation](https://docs.nvidia.com/holoscan/sdk-user-guide/holoscan_debugging.html) and [HoloHub debugging tutorials](https://github.com/nvidia-holoscan/holohub/tree/main/tutorials/debugging)
-
-### Performance
-
-Low latency is crucial for many HoloHub applications. Use these resources for performance analysis:
-
-#### Performance Analysis Tools
-
-- **HoloHub Benchmarks**: [Holohub `benchmarks/`](https://github.com/nvidia-holoscan/holohub/tree/main/benchmarks) (not in Sensor Bridge Hub)
-- **Flow Tracking**: [`holoscan_flow_benchmarking/`](https://github.com/nvidia-holoscan/holohub/tree/main/benchmarks/holoscan_flow_benchmarking) for data flow analysis
-- **SDK Profiling**: General profiling tools in the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/holoscan_debugging.html)
-
-#### Performance Best Practices
-
-- Include performance insights in your application README
-- Document any performance considerations or optimizations
-- Share benchmarking results when relevant for community benefit
-- Consider latency implications in your design decisions
-
-## Getting Help
-
-### Troubleshooting
-
-**Common Issues:**
-
-1. **Build Failures**
-   - Verify all dependencies are installed
-   - Check CMakeLists.txt configuration
-   - Ensure correct build flags are used
-
-2. **Linting Errors**
-   - Run `pre-commit run --all-files` locally before submitting
-   - Use automated fix commands when available
-   - Check code formatting against standards
-
-3. **Test Failures**
-   - Verify test environment setup
-   - Check for missing test data or dependencies
-   - Review test output for specific error messages
-
-4. **PR Review Issues**
-   - Address all reviewer feedback promptly
-   - Ensure all CI/CD checks pass
-   - Update documentation if requested
-
-**Getting Additional Help:**
-
-- Check existing [GitHub Issues](https://github.com/nvidia-holoscan/holohub/issues)
-- Review similar contributions for reference
-- Ask questions in your PR comments for specific guidance and call `@nvidia-holoscan/holohub`.
-
-### Reporting Issues
-
-Found a bug or need a feature? Please open a [HoloHub Issue](https://github.com/nvidia-holoscan/holohub/issues).
+Report bugs and feature requests for a project in this repository on [GitHub Issues](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/issues). Name the project, and mention the maintainer listed in its README. Report problems in HSB itself on the [HSB issue tracker](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/issues).
 
 **When reporting issues, include:**
 
 - Clear description of the problem or enhancement request
 - Steps to reproduce (for bugs)
 - Expected vs. actual behavior
-- Environment details (OS, SDK version, etc.)
+- Configuration: HSB release, Holoscan SDK, developer kit, and operating system versions
 - Relevant logs or error messages
-
-**For enhancement requests:**
-
-- Describe the use case and benefits
-- Propose potential implementation approach
-- Consider if it fits HoloHub's scope and goals
-
-### Advanced Developer Guide
-
-Please refer to the [HoloHub Developer Reference](./doc/developer.md) for more advanced developer guidance.
-
----
-
-Thank you for contributing to HoloHub! Your contributions help build a stronger ecosystem for the Holoscan community. 🚀

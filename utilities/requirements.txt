@@ -1,6 +1,0 @@
---extra-index-url https://pypi.nvidia.com
--r ../requirements-cli.txt
-jsonschema>=4.26.0
-pandas>=3.0.3
-semver>=3.0.4
-tabulate>=0.10.0

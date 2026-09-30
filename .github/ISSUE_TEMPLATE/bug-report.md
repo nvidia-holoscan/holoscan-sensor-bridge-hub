@@ -7,6 +7,12 @@ assignees: ''
 
 ---
 
+<!--
+Use this template for projects in this repository. Report bugs in Holoscan Sensor Bridge
+itself (host software, operators, FPGA IP, or firmware) at
+https://github.com/nvidia-holoscan/holoscan-sensor-bridge/issues instead.
+-->
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -22,10 +28,12 @@ If applicable, add screenshots to help explain your problem.
 **Environment**
 Please complete the following information and any other relevant information:
 
+- Project: [e.g. nvidia/operators/template_op]
 - Device: [e.g. IGX Orin, AGX Thor]
 - OS: [e.g. Ubuntu 22.04]
 - CUDA Version: [e.g. 13.1]
 - NVIDIA Driver Version: [e.g. 580]
+- Holoscan Sensor Bridge Version: [e.g. 2.7.0]
 - Holoscan SDK Version: [e.g. v3.8]
 
 **Additional context**
@@ -34,4 +42,4 @@ Add any other context about the problem here.
 **Suggest a potential fix**
 Tell us how we could fix the bug in this regard.
 
-Thanks for contributing to HoloHub 🎉!
+Thanks for contributing to Holoscan Sensor Bridge Hub 🎉!

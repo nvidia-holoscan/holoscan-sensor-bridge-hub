@@ -1,0 +1,33 @@
+{
+	"operator": {
+		"name": "TemplateOp",
+		"description": "Minimal Holoscan operator to copy when starting a new operator.",
+		"authors": [
+			{
+				"name": "Holoscan Sensor Bridge Team",
+				"affiliation": "NVIDIA"
+			}
+		],
+		"language": "C++",
+		"version": "1.0.0",
+		"changelog": {
+			"1.0.0": "Initial release"
+		},
+		"holoscan_sdk": {
+			"minimum_required_version": "4.6.0",
+			"tested_versions": [
+				"4.6.0"
+			]
+		},
+		"platforms": [
+			"x86_64",
+			"aarch64"
+		],
+		"tags": [
+			"Development",
+			"Template"
+		],
+		"ranking": 2,
+		"requirements": {}
+	}
+}

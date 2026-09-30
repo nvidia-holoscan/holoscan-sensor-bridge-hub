@@ -14,6 +14,7 @@
 # limitations under the License.
 
 # Run `pre-commit autoupdate` to refresh to latest compatible versions.
+# Hook settings live in tools/lint/; tool versions for CI are in tools/lint/requirements.txt.
 
 repos:
   # General: pre-commit hooks
@@ -23,7 +24,6 @@ repos:
       - id: check-merge-conflict
       - id: trailing-whitespace
       - id: check-yaml
-        exclude: 'doc/website/mkdocs\.yml|applications/video_streaming/video_streaming_server/cpp/video_streaming_server_demo\.yaml'
       - id: end-of-file-fixer
       - id: mixed-line-ending
 
@@ -32,21 +32,22 @@ repos:
     rev: v0.15.12
     hooks:
       - id: ruff
-        args: [--fix, --ignore, E712]
+        args: [--fix, --ignore, E712, --config, tools/lint/pyproject.toml]
 
   # Python: isort
   - repo: https://github.com/PyCQA/isort
     rev: 8.0.1
     hooks:
       - id: isort
-        args: [--settings-path, .]
+        args: [--settings-path, tools/lint/pyproject.toml]
 
   # Python: black
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 26.3.1
     hooks:
       - id: black
-        # Mirror pyproject.toml [tool.black] extend-exclude
+        args: [--config, tools/lint/pyproject.toml]
+        # Mirror tools/lint/pyproject.toml [tool.black] extend-exclude
         exclude: |
           (?x)(
             ^\.cache/
@@ -63,24 +64,25 @@ repos:
       - id: codespell
         args:
           - --write-changes
-          - --ignore-words=codespell_ignore_words.txt
-          - --exclude-file=codespell.txt
-          - --skip=*.onnx,*.min.js,*.min.js.map,*/Contrastive_learning_Notebook.ipynb,./data/
+          - --ignore-words=tools/lint/codespell_ignore_words.txt
+          - --skip=*.onnx,*.min.js,*.min.js.map,./data/
 
   # C++: cpplint
   - repo: https://github.com/cpplint/cpplint
     rev: 2.0.2
     hooks:
       - id: cpplint
-        args: [--quiet]
-        exclude: ^applications/holoviz/template/cookiecutter
+        args:
+          - --quiet
+          - --linelength=100
+          - --filter=-build/header_guard,-readability/todo,-runtime/references,-build/c++11,-build/c++17,-runtime/int,-build/include_subdir,-build/namespaces,-readability/casting,-build/include,-runtime/threadsafe_fn,-whitespace/newline,-whitespace/indent_namespace,-readability/nolint
 
   # Markdown: markdownlint
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.48.0
     hooks:
       - id: markdownlint
-        args: [--fix, --config, .markdownlint.yaml, --ignore-path, .markdownlintignore]
+        args: [--fix, --config, tools/lint/.markdownlint.yaml]
 
   # Copyright header check (NVIDIA SPDX)
   - repo: local

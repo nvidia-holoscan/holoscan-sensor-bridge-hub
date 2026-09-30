@@ -19,12 +19,12 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Utility Dependencies
+      - name: Install Metadata Tool Dependencies
         run: |
-          python -m pip install -r ./utilities/requirements.txt
+          python -m pip install -r tools/metadata/requirements.txt
 
       - name: Run metadata_validator.py
-        run: python -m utilities.metadata.metadata_validator
+        run: python tools/metadata/metadata_validator.py
 
       - name: Run gather_metadata.py
-        run: python -m utilities.metadata.gather_metadata
+        run: python tools/metadata/gather_metadata.py

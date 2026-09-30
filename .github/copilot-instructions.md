@@ -1,4 +1,4 @@
-# Copilot Instructions for HoloHub Repository
+# Copilot Instructions for Holoscan Sensor Bridge Hub Repository
 
 ## Category Validation
 
@@ -7,7 +7,7 @@ When reviewing Pull Requests that modify or add `metadata.json` files, verify th
 ### Validation Steps
 
 1. **Locate metadata.json files**: Check if the PR adds or modifies any `metadata.json` files
-2. **Extract tags**: Look for the `tags` field within the `application`, `operator`, `tutorial`, `benchmark`, `workflow`, or `gxf_extension` object, and extract the first tag as the category.
+2. **Extract tags**: Look for the `tags` field within the `application`, `operator`, `tutorial`, or `benchmark` object, and extract the first tag as the category.
 3. **Compare against approved list**: Verify the category exists in the "Approved Category List" below
 4. **Flag discrepancies**: If the category is not in the approved list:
    - Comment on the PR indicating which tags are not recognized
@@ -55,6 +55,6 @@ If a PR contains invalid tags, provide feedback like:
 >
 > The following category in `path/to/metadata.json` is not in the approved category list: `NewCategory`
 >
-> Please replace it with an existing category from [the approved category list](https://github.com/nvidia-holoscan/holohub/tree/main/.github/copilot-instructions.md#approved-category-list). Here are some existing categories that might be suitable alternatives:
+> Please replace it with an existing category from [the approved category list](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/blob/main/.github/copilot-instructions.md#approved-category-list). Here are some existing categories that might be suitable alternatives:
 >
 > - For `NewCategory`, consider: `Similar Category A`, `Similar Category B`

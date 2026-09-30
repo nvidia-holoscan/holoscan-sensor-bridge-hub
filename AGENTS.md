@@ -1,24 +1,27 @@
 # AGENTS.md
 
-Guidance for AI agents working in the **Holoscan Sensor Bridge Hub** repository (a Holohub-layout repo, part of [Holohub](https://github.com/nvidia-holoscan/holohub)).
+Guidance for AI agents working in the **Holoscan Sensor Bridge Hub** repository.
 
 ## Repository Structure
 
-Projects live under `applications/`, `operators/`, and `tutorials/`. Each project has a `metadata.json` (configuration, modes, dependencies) and a `CMakeLists.txt` where applicable (build registration). Check a project's README for hardware requirements and data downloads before building.
+Projects live under `<org>/<category>/<project>/`, grouped by the organization that maintains them (for example, `nvidia/operators/<project>/`). Categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Create organization and category folders only when adding their first project, and start new projects from `nvidia/examples/template_app/` or `nvidia/operators/template_op/`.
 
-Workflows, benchmarks, GXF extensions, and Debian packages belong in the main [Holohub](https://github.com/nvidia-holoscan/holohub) repository, not here.
+Projects build on [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB). Changes to HSB itself (host software, operators, FPGA IP, firmware, emulator) belong in the HSB repository, not here.
+
+Each project builds on its own and documents its hardware, tested versions (including the HSB release), and build, run, and test commands in its `README.md`; `metadata.json` is optional. Shared, opt-in helpers (CMake modules, a development Dockerfile, metadata schemas and checks) and the lint settings live in `tools/`; only `.gitignore` and `.pre-commit-config.yaml` stay at the repository root.
 
 ## Boundaries
 
-- **Always** run `./hsb run-container -- "./hsb lint --install-dependencies; ./hsb lint"` before committing
-- **Always** use `--dryrun --verbose` to inspect a CLI command before running it for real, where those flags are supported
-- **Ask first** before changing `metadata.json` schemas, shared Dockerfiles, or CMake registration macros (`add_holohub_application`, `add_holohub_operator`, etc.)
+- **Always** run `pre-commit run --all-files` before committing (install the tools with `python3 -m pip install -r tools/lint/requirements.txt`)
+- **Always** sign off commits (`git commit -s`)
+- **Ask first** before adding repository-wide build systems, containers, or CLIs, before changing the shared helpers or metadata schemas in `tools/`, or before making one project depend on another
+- **Ask first** before copying HSB source into a project; build against a tagged HSB release instead, and keep any HSB changes as patches against it
 - **Never** delete `build/`, `data/`, or `install/` directories without asking
 
 ## References
 
-- [Main README](README.md) — overview, building, running, contributing
-- [Contributing Guide](CONTRIBUTING.md) — how to contribute to this repository
-- [Holohub CONTRIBUTING](https://github.com/nvidia-holoscan/holohub/blob/main/CONTRIBUTING.md) — shared conventions and additional component types
-- [Developer Guide](doc/developer.md) — container and native build workflows
+- [Main README](README.md) — repository organization and linting
+- [Contributing Guide](CONTRIBUTING.md) — project requirements, ownership, and review
+- [Tools](tools/README.md) — shared helpers and CI checks
+- [Holoscan Sensor Bridge repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) and [user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction)
 - [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/overview.html)
