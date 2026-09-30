@@ -2,8 +2,10 @@
 
 A curated collection of sensor integrations, demos, and related projects for [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB), from NVIDIA and ecosystem partners.
 
-![Lint](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_lint.yml?branch=main&label=Lint)
-![Metadata](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_metadata.yml?branch=main&label=Metadata)
+[![Check linting](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_lint.yml/badge.svg?branch=main)](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_lint.yml)
+[![Check metadata validity](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_metadata.yml/badge.svg?branch=main)](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_metadata.yml)
+[![Check Compliance](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_compliance.yml/badge.svg?branch=main)](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_compliance.yml)
+[![Check URLs](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_urls.yml/badge.svg?branch=main)](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/actions/workflows/check_urls.yml)
 
 *note*: For other components in the NVIDIA Holoscan ecosystem, see [Holohub](https://github.com/nvidia-holoscan/holohub) and [nvidia-holoscan.github.io/holohub](https://nvidia-holoscan.github.io/holohub).
 
