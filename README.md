@@ -42,7 +42,7 @@ Pick a project and follow its `README.md`. To start a new project, copy the [app
 Install the lint tools and run all checks from the repository root:
 
 ```sh
-python3 -m pip install -r tools/requirements.lint.txt
+python3 -m pip install -r tools/lint/requirements.txt
 pre-commit run --all-files
 ```
 

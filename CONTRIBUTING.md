@@ -132,7 +132,7 @@ Thanks in advance for your patience as we review your contributions. We do appre
 Install the lint tools and run all checks from the repository root:
 
 ```bash
-python3 -m pip install -r tools/requirements.lint.txt
+python3 -m pip install -r tools/lint/requirements.txt
 pre-commit run --all-files
 ```
 

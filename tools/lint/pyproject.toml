@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Python lint settings. The pre-commit hooks pass this file explicitly
+# (ruff --config, isort --settings-path, black --config).
+
 [tool.isort]
 profile = "black"
 line_length = 100
-known_first_party = "holohub"
 skip_glob = ["build*/*", "install*/*", ".cache/*", ".ruff_cache/*", ".local/*"]
 
 [tool.black]
@@ -37,7 +39,7 @@ extend-exclude = '''
 
 [tool.codespell]
 skip = "_deps,build*,.cache,html,_build,_static,generated,latex,install*,.git,xml,vale"
-ignore-words = "codespell_ignore_words.txt"
+ignore-words = "tools/lint/codespell_ignore_words.txt"
 
 [tool.ruff]
 line-length = 103  # 103 to avoid E501 warnings from the copyright header
@@ -56,10 +58,3 @@ exclude = [
   ".ruff_cache",
   ".local"
 ]
-
-[tool.ruff.lint.per-file-ignores]
-# commented ignore ported from flake8 as E203 is not checked by ruff
-# "scripts/convert_video_to_gxf_entities.py" = ["E203"]
-
-[tool.ruff.lint.isort]
-known-first-party = ["holohub"]

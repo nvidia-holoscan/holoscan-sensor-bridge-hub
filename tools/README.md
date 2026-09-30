@@ -7,9 +7,9 @@ Projects must still build on their own. Referencing a helper here by relative pa
 | Path | Purpose |
 | --- | --- |
 | [`cmake/`](./cmake/) | CMake modules for Holoscan projects |
-| [`docker/Dockerfile`](./docker/Dockerfile) | Optional development image based on the Holoscan SDK container |
+| [`docker/`](./docker/) | Optional development image based on the Holoscan SDK container |
+| [`lint/`](./lint/) | Lint settings and tool versions used by pre-commit and CI |
 | [`metadata/`](./metadata/) | Schemas and checks for optional `metadata.json` files |
-| [`requirements.lint.txt`](./requirements.lint.txt) | Lint tools run by pre-commit and CI |
 
 ## CMake Modules
 
@@ -41,7 +41,7 @@ docker build -f tools/docker/Dockerfile \
   -t holoscan-sensor-bridge-hub:dev .
 ```
 
-On hosts with a CUDA 12 driver, use the `v4.6.0-cuda12-dgpu` or `v4.6.0-cuda12-igpu` tag instead. Add `--target holohub-aja`, `--target dds`, or `--target yuan-qcap` for the stages with extra dependencies.
+On hosts with a CUDA 12 driver, use the `v4.6.0-cuda12-dgpu` or `v4.6.0-cuda12-igpu` tag instead. Add `--target aja`, `--target dds`, or `--target yuan-qcap` for the stages with extra dependencies. BuildKit applies `docker/Dockerfile.dockerignore` to this build.
 
 Start a container with the repository mounted:
 
@@ -69,6 +69,17 @@ python3 tools/metadata/gather_metadata.py
 ## Linting
 
 ```sh
-python3 -m pip install -r tools/requirements.lint.txt
+python3 -m pip install -r tools/lint/requirements.txt
 pre-commit run --all-files
 ```
+
+The hooks in `.pre-commit-config.yaml` read their settings from `lint/`:
+
+| File | Used by |
+| --- | --- |
+| [`pyproject.toml`](./lint/pyproject.toml) | black, isort, ruff, and codespell |
+| [`.markdownlint.yaml`](./lint/.markdownlint.yaml) | markdownlint |
+| [`codespell_ignore_words.txt`](./lint/codespell_ignore_words.txt) | codespell |
+| [`.clang-format`](./lint/.clang-format) | clang-format (not run by the hooks) |
+
+cpplint settings are passed as hook arguments. To use the same settings in an editor or when running a tool directly, point it at these files, for example `black --config tools/lint/pyproject.toml` or `clang-format --style=file:tools/lint/.clang-format`.

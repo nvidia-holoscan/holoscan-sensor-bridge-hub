@@ -109,7 +109,7 @@ RUN echo 'export JREHOME=$(readlink /etc/alternatives/java | sed -e "s/\/bin\/ja
 # Set up packages for developing with AJA Capture Cards
 #
 # --------------------------------------------------------------------------
-FROM dev-setup AS holohub-aja
+FROM dev-setup AS aja
 
 RUN apt update \
     && apt install --no-install-recommends -y \
@@ -122,4 +122,4 @@ RUN apt update \
 # as the environment for project development.
 #
 # --------------------------------------------------------------------------
-FROM dev-setup AS holohub-dev
+FROM dev-setup AS dev

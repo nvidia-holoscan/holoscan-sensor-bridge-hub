@@ -25,7 +25,7 @@
 #
 # Optional Parameters:
 #   PATH - The path to the operator within the Holohub repository (defaults to OPERATOR_NAME)
-#   REPO_URL - The URL of the Holohub repository (defaults to git@github.com:nvidia-holoscan/holohub.git)
+#   REPO_URL - The URL of the Holohub repository (defaults to https://github.com/nvidia-holoscan/holohub.git)
 #   BRANCH - The branch to checkout (defaults to "main")
 #   DEPTH - Git clone depth (defaults to 1 for shallow clone, use 0 for full history)
 #   DISABLE_PYTHON - Whether to build Python bindings

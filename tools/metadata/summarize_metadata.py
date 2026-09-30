@@ -77,7 +77,7 @@ def summarize_subprojects(metadata: pd.DataFrame) -> str:
     holoscan_versions = process_versions(metadata, "holoscan_sdk.tested_versions")
     gxf_versions = process_versions(metadata, "gxf_version.tested_versions")
 
-    summary = "######################### HoloHub Metadata Summary #########################\n\n"
+    summary = "######################### Holoscan Sensor Bridge Hub Metadata Summary #########################\n\n"
 
     for key in ["project_type", "language", "ranking"]:
         summary += metadata[key].value_counts().to_string()
@@ -113,7 +113,7 @@ def main(args: argparse.Namespace):
     if not args.quiet:
         logger.info(summarize_subprojects(metadata_df))
         logger.info(
-            "######################### HoloHub Subprojects Summary #########################\n\n"
+            "######################### Holoscan Sensor Bridge Hub Subprojects Summary #########################\n\n"
         )
         logger.info(metadata_summary_df.to_string(index=False))
 
@@ -123,7 +123,7 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Utility to collect and inspect metadata for HoloHub projects"
+        description="Utility to collect and inspect metadata for Holoscan Sensor Bridge Hub projects"
     )
     parser.add_argument(
         "-o",
