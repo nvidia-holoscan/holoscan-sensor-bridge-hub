@@ -1,6 +1,6 @@
 # Holoscan Sensor Bridge Hub
 
-A focused collection of reference applications, operators, and tutorials for [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) and related sensor I/O on the Holoscan platform.
+A curated collection of [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) integrations, sensor demos, and related projects from NVIDIA and ecosystem partners.
 
 ![Lint](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_lint.yml?branch=main&label=Lint)
 ![Metadata](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_metadata.yml?branch=main&label=Metadata)
@@ -9,97 +9,52 @@ A focused collection of reference applications, operators, and tutorials for [Ho
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Prerequisites](#prerequisites)
-- [Building](#building)
-- [Running](#running)
+- [Repository Organization](#repository-organization)
+- [Getting Started](#getting-started)
+- [Linting](#linting)
 - [Contributing](#contributing)
 - [More Information](#more-information)
 
-## Overview
+## Repository Organization
 
-| Directory | Purpose |
-| --- | --- |
-| [`applications/`](./applications/) | Example Holoscan applications for Sensor Bridge use cases |
-| [`operators/`](./operators/) | Reusable Holoscan operators |
-| [`tutorials/`](./tutorials/) | Walkthroughs and how-tos |
+Projects are grouped by the organization that maintains them, under `<org>/<category>/<project>/`:
 
-Each project includes a `metadata.json` and `README.md`. Use the `template/` folder in each directory to start a new project.
-
-## Prerequisites
-
-Refer to the [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/sdk_installation.html#prerequisites) and the [Holoscan Sensor Bridge documentation](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) for platform and hardware requirements.
-
-### Container Build (Recommended)
-
-- [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
-- [Docker](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) with buildx
-- `git`
-- Python 3.11–3.13 with `venv` and `pip` for the `./hsb` CLI
-- NVIDIA NGC credentials at [ngc.nvidia.com](https://catalog.ngc.nvidia.com/)
-
-#### Fetch
-
-```sh
-git clone https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub.git
-cd holoscan-sensor-bridge-hub
+```text
+holoscan-sensor-bridge-hub/
+├── nvidia/
+│   ├── examples/template_app/   # application template
+│   └── operators/template_op/   # operator template
+├── <org>/                       # for example adi/ or altera/
+│   └── <category>/<project>/
+└── tools/                       # opt-in shared helpers and CI checks
 ```
 
-See each project's `README.md` and `metadata.json` for dependencies and hardware requirements.
+Categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Organization and category folders are created with their first project.
 
-## Building
+Each project is self-contained: it builds on its own, and its `README.md` lists the hardware, the tested Holoscan Sensor Bridge and Holoscan SDK versions, and the build, run, and test commands. Each project is maintained by its contributor; hosting a project here does not imply NVIDIA certification or maintenance.
 
-Use `./hsb` to discover, build, and run projects. On first use it installs
-`holoscan-cli[create]==5.0.0a1`, including template dependencies, into a managed
-virtual environment under `$XDG_CACHE_HOME/holoscan-cli/` or `~/.cache/holoscan-cli/`.
-An active virtual environment or `HOLOSCAN_CLI_PYTHON_BIN` selects an existing
-Python environment instead. Containers reuse the image's installed CLI.
-No virtual environment activation is needed.
+## Getting Started
 
-```sh
-./hsb --help
-./hsb list
-```
+Pick a project and follow its `README.md`. To start a new project, copy the [application template](./nvidia/examples/template_app/) or the [operator template](./nvidia/operators/template_op/). Shared, opt-in helpers such as CMake modules and a development container are described in [`tools/`](./tools/README.md).
 
-The repository currently contains scaffolding templates; `list` will be empty
-until projects with `metadata.json` are added. Templates are excluded from discovery.
-See [Starting a New Project](./applications/README.md#starting-a-new-project) to
-generate a C++ or Python application with `./hsb create`.
+## Linting
 
-Build the default development container:
+Install the lint tools and run all checks from the repository root:
 
 ```sh
-./hsb build-container --dryrun --verbose
-./hsb build-container
+python3 -m pip install -r tools/requirements.lint.txt
+pre-commit run --all-files
 ```
 
-The wrapper defaults to Holoscan SDK 4.6.0 and lets the CLI select the CUDA tag.
-Use `--base-img <sdk-image>` to select the image required by your hardware or project.
-CLI and SDK image versions are configured independently.
-
-For a contributed project, use `./hsb build <project>`; the CLI reads the Dockerfile
-and dependencies from that project's `metadata.json`.
-
-See [`doc/developer.md`](./doc/developer.md) for native build and development details.
-
-## Running
-
-Open the development container with the repository mounted:
-
-```sh
-./hsb run-container --dryrun --verbose
-./hsb run-container
-```
-
-Run a contributed application with `./hsb run <project>`. Follow its `README.md`
-for sensor setup, data downloads, and hardware requirements.
+Many hooks fix issues in place; rerun `pre-commit run --all-files` until it passes. CI runs the same checks, plus copyright, link, and `metadata.json` checks.
 
 ## Contributing
 
-Please review [CONTRIBUTING.md](./CONTRIBUTING.md). New projects should use the `template/` folders under each component directory.
+Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for project requirements, ownership, and the review process.
 
 ## More Information
 
-- [Holohub](https://github.com/nvidia-holoscan/holohub) — main reference catalog (part of which this repo is)
 - [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge)
+- [Holoscan Sensor Bridge documentation](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html)
 - [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/overview.html)
+- [Holohub](https://github.com/nvidia-holoscan/holohub)

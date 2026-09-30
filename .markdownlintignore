@@ -1,2 +1,1 @@
-# MkDocs Material uses indented content for admonitions and tabs; MD046 conflicts
-tutorials/high_performance_networking/README.md
+# Markdown files to skip in markdownlint, one path or glob per line
