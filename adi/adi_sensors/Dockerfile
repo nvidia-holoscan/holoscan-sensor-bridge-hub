@@ -34,11 +34,11 @@ RUN apt update && apt install -y \
     ros-jazzy-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
-COPY applications/adi/prepare_hsb.py /opt/adi/prepare_hsb.py
-COPY applications/adi/patches /opt/adi/patches
+COPY adi/adi_sensors/prepare_hsb.py /opt/adi/prepare_hsb.py
+COPY adi/adi_sensors/patches /opt/adi/patches
 RUN python3 /opt/adi/prepare_hsb.py /opt/hsb
 
-COPY applications/adi /opt/adi
+COPY adi/adi_sensors /opt/adi
 ARG CUDA_ARCHITECTURES=89
 ARG BUILD_JOBS=4
 RUN cmake -S /opt/adi -B /opt/adi/build -G Ninja \
@@ -60,13 +60,10 @@ RUN pip3 install --ignore-installed scipy
 # Required by Python publisher firmware update (manifest download + YAML parse)
 RUN pip3 install requests pyyaml
 
-# Reuse the repository's CLI pin when entering this image through ./hsb.
-COPY requirements-cli.txt /tmp/requirements-cli.txt
-COPY applications/adi/requirements.txt /tmp/requirements-adi.txt
+COPY adi/adi_sensors/requirements.txt /tmp/requirements-adi.txt
 RUN python3 -m pip install --no-cache-dir --break-system-packages \
-      --extra-index-url https://pypi.nvidia.com \
-      --only-binary=:all: -r /tmp/requirements-cli.txt -r /tmp/requirements-adi.txt \
-    && rm /tmp/requirements-cli.txt /tmp/requirements-adi.txt
+      --only-binary=:all: -r /tmp/requirements-adi.txt \
+    && rm /tmp/requirements-adi.txt
 
 ENV PATH=/opt/adi/install/bin:${PATH}
 ENV PYTHONPATH=/opt/adi/install/python:${PYTHONPATH}

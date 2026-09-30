@@ -2,10 +2,7 @@
 
 ADI time-of-flight (ToF), industrial IMU, and A2B audio examples built with
 Holoscan Sensor Bridge (HSB). This directory provides a standalone CMake build
-and a Docker workflow. No Hub CLI is required.
-
-The existing `./hsb` wrapper can also build the image and open a development
-container; both entry points use the same Dockerfile.
+and a Docker workflow.
 
 ## Source versions
 
@@ -24,7 +21,8 @@ Install Docker and the NVIDIA Container Toolkit. Run from the Hub repository roo
 
 ```sh
 docker build --progress=plain \
-  -f applications/adi/Dockerfile \
+  -f adi/adi_sensors/Dockerfile \
+  --build-arg BASE_IMAGE=nvcr.io/nvidia/clara-holoscan/holoscan:v4.4.0-cuda13@sha256:7af522a5ab43f5be6503520dc2afda1f4690b55079ebaca125910a1ec0d3df19 \
   --build-arg CUDA_ARCHITECTURES=89 \
   --build-arg BUILD_JOBS=4 \
   -t hsb-adi:2.7.0 .
@@ -51,35 +49,6 @@ docker run --rm --gpus all --ulimit stack=67108864 hsb-adi:2.7.0 \
 
 These checks run the C++ and Python player help and import the installed
 Hololink and IMU bindings. They do not acquire sensor data. ROS2 is not installed in this image.
-
-## Optional HSB CLI
-
-From the Hub repository root:
-
-```sh
-adi_sdk_image=nvcr.io/nvidia/clara-holoscan/holoscan:v4.4.0-cuda13@sha256:7af522a5ab43f5be6503520dc2afda1f4690b55079ebaca125910a1ec0d3df19
-./hsb build-container adi --base-img "$adi_sdk_image" --img hsb-adi:2.7.0 --dryrun --verbose
-./hsb build-container adi --base-img "$adi_sdk_image" --img hsb-adi:2.7.0
-./hsb run-container adi --img hsb-adi:2.7.0 --no-docker-build --dryrun --verbose \
-  -- python3 /opt/adi/smoke_test.py
-./hsb run-container adi --img hsb-adi:2.7.0 --no-docker-build \
-  -- python3 /opt/adi/smoke_test.py
-```
-
-The container already contains the built examples. To rebuild edited Hub
-sources in the mounted workspace:
-
-```sh
-./hsb build adi --img hsb-adi:2.7.0 --no-docker-build --parallel 4 \
-  --configure-args=-DCMAKE_CUDA_ARCHITECTURES=89 --dryrun --verbose
-./hsb build adi --img hsb-adi:2.7.0 --no-docker-build --parallel 4 \
-  --configure-args=-DCMAKE_CUDA_ARCHITECTURES=89
-```
-
-This uses the patched `/opt/hsb` dependency from the image. The standalone
-CMake workflow below can use a separately prepared checkout.
-The explicit base image keeps the CLI's repository-wide SDK default from
-overriding the version validated for these examples.
 
 ## Run with hardware
 
@@ -110,8 +79,8 @@ source paths correspond to `/opt/adi/`; C++ executables are already on `PATH`.
 Inside a compatible development environment containing the Dockerfile's dependencies:
 
 ```sh
-python3 applications/adi/prepare_hsb.py build/adi-hsb-source
-cmake -S applications/adi -B build/adi-standalone -G Ninja \
+python3 adi/adi_sensors/prepare_hsb.py build/adi-hsb-source
+cmake -S adi/adi_sensors -B build/adi-standalone -G Ninja \
   -DHSB_SOURCE_DIR="$PWD/build/adi-hsb-source" \
   -DCMAKE_CUDA_ARCHITECTURES=89 \
   -DCMAKE_BUILD_TYPE=Release \
@@ -121,7 +90,7 @@ cmake --install build/adi-standalone
 ctest --test-dir build/adi-standalone --output-on-failure
 PATH="$PWD/install/adi-standalone/bin:$PATH" \
 PYTHONPATH="$PWD/install/adi-standalone/python${PYTHONPATH:+:$PYTHONPATH}" \
-  python3 applications/adi/smoke_test.py
+  python3 adi/adi_sensors/smoke_test.py
 ```
 
 `prepare_hsb.py` clones the release into a new directory, verifies its commit,
