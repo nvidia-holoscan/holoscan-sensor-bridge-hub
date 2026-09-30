@@ -7,6 +7,12 @@ assignees: ''
 
 ---
 
+<!--
+Use this template for projects in this repository. Report bugs in Holoscan Sensor Bridge
+itself (host software, operators, FPGA IP, or firmware) at
+https://github.com/nvidia-holoscan/holoscan-sensor-bridge/issues instead.
+-->
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 

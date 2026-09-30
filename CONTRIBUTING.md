@@ -1,12 +1,13 @@
 # Contributing to Holoscan Sensor Bridge Hub
 
-Holoscan Sensor Bridge Hub is a curated collection of [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) integrations and sensor demos from NVIDIA and ecosystem partners. NVIDIA maintainers decide which contributions to accept, and contributors maintain the projects they add.
+Holoscan Sensor Bridge Hub is a curated collection of integrations and sensor demos for [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB) from NVIDIA and ecosystem partners. NVIDIA maintainers decide which contributions to accept, and contributors maintain the projects they add.
 
 ## Table of Contents
 
 - [What Belongs Here](#what-belongs-here)
 - [Repository Organization](#repository-organization)
 - [Project Requirements](#project-requirements)
+- [Building on Holoscan Sensor Bridge](#building-on-holoscan-sensor-bridge)
 - [Ownership and Review](#ownership-and-review)
 - [Developer Process](#developer-process)
 - [Code Quality](#code-quality)
@@ -15,7 +16,9 @@ Holoscan Sensor Bridge Hub is a curated collection of [Holoscan Sensor Bridge](h
 
 ## What Belongs Here
 
-This repository accepts reusable Holoscan Sensor Bridge integrations and sensor demos. Complete end-to-end Holoscan applications that are not centered on Holoscan Sensor Bridge belong in other Holoscan repositories, such as [Holohub](https://github.com/nvidia-holoscan/holohub).
+This repository accepts reusable HSB integrations and sensor demos. Complete end-to-end Holoscan applications that are not centered on HSB belong in other Holoscan repositories, such as [Holohub](https://github.com/nvidia-holoscan/holohub).
+
+Changes to HSB itself, such as its host software, operators, FPGA IP, firmware, or emulator, belong in the [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge); see its [contributing guide](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/blob/main/CONTRIBUTING.md).
 
 Maintainers may decline a contribution based on scope, duplication, quality, dependencies, or missing ownership.
 
@@ -42,9 +45,10 @@ Place each project in `<org>/<category>/<project>/`, where `<org>` is the organi
 
 Start from the [application template](./nvidia/examples/template_app/) or the [operator template](./nvidia/operators/template_op/). Every project must meet these requirements:
 
-- **Builds independently**: The project has its own build files, such as `CMakeLists.txt`, a `Dockerfile`, or `requirements.txt`, and does not depend on other projects in this repository. A project may build on top of a Holoscan Sensor Bridge release; name the release and any patches in its README.
+- **Builds independently**: The project has its own build files, such as `CMakeLists.txt`, a `Dockerfile`, or `requirements.txt`, and does not depend on other projects in this repository.
+- **Uses an HSB release**: The project builds against a tagged [HSB release](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/releases), for example inside the HSB container, rather than a copy of the HSB source. If it needs changes to HSB, keep them as patches against that release and describe them in the README.
 - **README**: The project's `README.md` covers its purpose, hardware, tested configuration, setup, build, run, and test commands, expected output, limitations, license, and support contact. The templates show each section.
-- **Tested configuration**: The README states the exact versions the project was last tested with, including Holoscan Sensor Bridge, Holoscan SDK, the developer kit, the operating system (JetPack, IGX OS, or Ubuntu), the FPGA bitstream, and sensor firmware.
+- **Tested configuration**: The README states the exact versions the project was last tested with, including the HSB release, Holoscan SDK, the developer kit, the operating system (JetPack, IGX OS, or Ubuntu), the FPGA bitstream, and sensor firmware.
 - **License**: Contributions are licensed under the Apache License 2.0. Contributors may retain copyright. Start each source file with an SPDX header, for example:
 
   ```text
@@ -64,6 +68,17 @@ A `metadata.json` file is optional. If you add one, it must use exactly one of t
 - **Contribution Signing**: All commits must be signed-off (see [signing requirements](#signing-your-work))
 
 > **Note**: NVIDIA is not responsible for conflicts resulting from community contributions.
+
+## Building on Holoscan Sensor Bridge
+
+The HSB repository and [user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction) cover most of what an integration needs:
+
+- **Setup**: [Hardware setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/hardware-setup), [host setup](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/host-setup), [firmware setup](https://docs.nvidia.com/holoscan/sensor-bridge/firmware/firmware-setup), and [building the HSB container](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build), which most projects build and run in.
+- **Applications**: The HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples) and the [Applications](https://docs.nvidia.com/holoscan/sensor-bridge/applications/applications) guide show complete sensor pipelines in Python and C++.
+- **New sensors**: The [New Sensors](https://docs.nvidia.com/holoscan/sensor-bridge/applications/new-sensors) guide and the Hololink module [application](https://docs.nvidia.com/holoscan/sensor-bridge/applications/hololink-module-application-tutorial) and [device driver](https://docs.nvidia.com/holoscan/sensor-bridge/applications/hololink-module-device-driver-tutorial) tutorials explain how to add a sensor.
+- **Testing without hardware**: The [HSB emulator](https://docs.nvidia.com/holoscan/sensor-bridge/emulation/hsb-emulator) exercises HSB operators without a sensor bridge board.
+- **AI skills**: The HSB [agent skills](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/skills) are examples for the `ai/skills` category.
+- **Release changes**: Check the HSB [release notes](https://docs.nvidia.com/holoscan/sensor-bridge/support/release-notes) when moving a project to a newer HSB release.
 
 ## Ownership and Review
 
@@ -207,12 +222,12 @@ Many hooks fix issues in place. Rerun `pre-commit run --all-files` until it pass
 
 ## Reporting Issues
 
-Report bugs and feature requests on [GitHub Issues](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/issues). Name the project, and mention the maintainer listed in its README.
+Report bugs and feature requests for a project in this repository on [GitHub Issues](https://github.com/nvidia-holoscan/holoscan-sensor-bridge-hub/issues). Name the project, and mention the maintainer listed in its README. Report problems in HSB itself on the [HSB issue tracker](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/issues).
 
 **When reporting issues, include:**
 
 - Clear description of the problem or enhancement request
 - Steps to reproduce (for bugs)
 - Expected vs. actual behavior
-- Configuration: Holoscan Sensor Bridge, Holoscan SDK, developer kit, and operating system versions
+- Configuration: HSB release, Holoscan SDK, developer kit, and operating system versions
 - Relevant logs or error messages

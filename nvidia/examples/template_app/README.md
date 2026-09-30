@@ -6,6 +6,8 @@ Minimal Holoscan application to copy when starting a new example or demo. It sen
 
 To start a new project, copy this folder to `<org>/<category>/<project>/`, rename the `template_app` target, and replace the ping operators in `main.cpp` with your sensor pipeline. Keep every section of this README and fill it in for your project.
 
+For Holoscan Sensor Bridge pipelines to build on, see the HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples) and the HSB [Applications](https://docs.nvidia.com/holoscan/sensor-bridge/applications/applications) guide.
+
 ## Tested Configuration
 
 | Component | Version |
@@ -30,6 +32,8 @@ docker run --rm -it --runtime=nvidia --gpus all \
   -v "$(pwd)":/workspace/template_app -w /workspace/template_app \
   nvcr.io/nvidia/clara-holoscan/holoscan:v4.6.0-cuda13
 ```
+
+Projects that use Holoscan Sensor Bridge usually build and run in the HSB container instead; see the HSB [build guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build).
 
 ## Build
 

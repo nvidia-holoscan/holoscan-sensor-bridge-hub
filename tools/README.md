@@ -33,6 +33,8 @@ fetch_holohub_operator(realsense_camera)
 
 ## Development Image
 
+This image adds common development packages to the Holoscan SDK container. It does not include Holoscan Sensor Bridge; projects that use HSB usually build and run in the HSB container instead, described in the HSB [build guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build).
+
 Build the image from the repository root, choosing the Holoscan SDK image for your host:
 
 ```sh

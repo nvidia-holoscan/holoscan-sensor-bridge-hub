@@ -14,6 +14,8 @@ To start a new operator, copy this folder to `<org>/operators/<project>/`, renam
 
 `test_template_op.cpp` connects the operator between the Holoscan SDK ping transmitter and receiver, and serves as the operator's test.
 
+To support a new sensor with Holoscan Sensor Bridge, see the HSB [New Sensors](https://docs.nvidia.com/holoscan/sensor-bridge/applications/new-sensors) guide and the HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples).
+
 ## Tested Configuration
 
 | Component | Version |
@@ -38,6 +40,8 @@ docker run --rm -it --runtime=nvidia --gpus all \
   -v "$(pwd)":/workspace/template_op -w /workspace/template_op \
   nvcr.io/nvidia/clara-holoscan/holoscan:v4.6.0-cuda13
 ```
+
+Projects that use Holoscan Sensor Bridge usually build and run in the HSB container instead; see the HSB [build guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build).
 
 ## Build
 

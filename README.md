@@ -1,6 +1,6 @@
 # Holoscan Sensor Bridge Hub
 
-A curated collection of [Holoscan Sensor Bridge](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html) integrations, sensor demos, and related projects from NVIDIA and ecosystem partners.
+A curated collection of sensor integrations, demos, and related projects for [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB), from NVIDIA and ecosystem partners.
 
 ![Lint](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_lint.yml?branch=main&label=Lint)
 ![Metadata](https://img.shields.io/github/actions/workflow/status/nvidia-holoscan/holoscan-sensor-bridge-hub/check_metadata.yml?branch=main&label=Metadata)
@@ -35,7 +35,9 @@ Each project is self-contained: it builds on its own, and its `README.md` lists 
 
 ## Getting Started
 
-Pick a project and follow its `README.md`. To start a new project, copy the [application template](./nvidia/examples/template_app/) or the [operator template](./nvidia/operators/template_op/). Shared, opt-in helpers such as CMake modules and a development container are described in [`tools/`](./tools/README.md).
+Most projects run on an HSB setup. Before building one, follow the HSB user guide to set up the [hardware](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/hardware-setup) and the [host](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/host-setup), and to [build the HSB container](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/build) from the [HSB release](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/releases) listed in the project's `README.md`. Then follow the project's `README.md`.
+
+To start a new project, copy the [application template](./nvidia/examples/template_app/) or the [operator template](./nvidia/operators/template_op/). Shared, opt-in helpers such as CMake modules and a development container are described in [`tools/`](./tools/README.md).
 
 ## Linting
 
@@ -50,11 +52,11 @@ Many hooks fix issues in place; rerun `pre-commit run --all-files` until it pass
 
 ## Contributing
 
-Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for project requirements, ownership, and the review process.
+Please review [CONTRIBUTING.md](./CONTRIBUTING.md) for project requirements, ownership, and the review process. Changes to HSB itself belong in the [HSB repository](https://github.com/nvidia-holoscan/holoscan-sensor-bridge).
 
 ## More Information
 
-- [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge)
-- [Holoscan Sensor Bridge documentation](https://docs.nvidia.com/holoscan/sensor-bridge/latest/index.html)
+- [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) and its [releases](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/releases)
+- [Holoscan Sensor Bridge user guide](https://docs.nvidia.com/holoscan/sensor-bridge/getting-started/introduction)
 - [Holoscan SDK User Guide](https://docs.nvidia.com/holoscan/sdk-user-guide/overview.html)
 - [Holohub](https://github.com/nvidia-holoscan/holohub)
