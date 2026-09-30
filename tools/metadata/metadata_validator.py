@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Validate the optional metadata.json files under <org>/<category>/<project>/."""
+"""Validate the optional metadata.json files in the organization directories."""
 
 import json
 import sys
@@ -25,8 +25,8 @@ from utils import (
     BASE_SCHEMA_PATH,
     PROJECT_TYPES,
     SCHEMA_DIR,
-    iter_category_dirs,
     iter_metadata_paths,
+    iter_org_dirs,
 )
 
 
@@ -57,9 +57,9 @@ def validate_json(json_data):
 
 def main() -> int:
     exit_code = 0
-    metadata_paths = list(iter_metadata_paths(list(iter_category_dirs())))
+    metadata_paths = list(iter_metadata_paths(list(iter_org_dirs())))
     if not metadata_paths:
-        print("No metadata.json files found under <org>/<category>/ directories.")
+        print("No metadata.json files found in the organization directories.")
 
     for name in metadata_paths:
         with open(name, "r") as file:

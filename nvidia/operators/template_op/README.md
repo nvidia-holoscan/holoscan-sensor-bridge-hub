@@ -4,7 +4,7 @@ Minimal Holoscan operator to copy when starting a new operator. `TemplateOp` mul
 
 ## Overview
 
-To start a new operator, copy this folder to `<org>/operators/<project>/`, rename `TemplateOp` and the `template_op` files and targets, and replace the logic in `template_op.cpp`. Keep every section of this README and fill it in for your project.
+To start a new operator, copy this folder into your organization's folder, for example to `<org>/operators/<project>/`, rename `TemplateOp` and the `template_op` files and targets, and replace the logic in `template_op.cpp`. Keep every section of this README and fill it in for your project.
 
 | Port or parameter | Type | Description |
 | --- | --- | --- |

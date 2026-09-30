@@ -4,7 +4,7 @@ Minimal Holoscan application to copy when starting a new example or demo. It sen
 
 ## Overview
 
-To start a new project, copy this folder to `<org>/<category>/<project>/`, rename the `template_app` target, and replace the ping operators in `main.cpp` with your sensor pipeline. Keep every section of this README and fill it in for your project.
+To start a new project, copy this folder into your organization's folder, for example to `<org>/<project>/`, rename the `template_app` target, and replace the ping operators in `main.cpp` with your sensor pipeline. Keep every section of this README and fill it in for your project.
 
 For Holoscan Sensor Bridge pipelines to build on, see the HSB [examples](https://github.com/nvidia-holoscan/holoscan-sensor-bridge/tree/main/examples) and the HSB [Applications](https://docs.nvidia.com/holoscan/sensor-bridge/applications/applications) guide.
 

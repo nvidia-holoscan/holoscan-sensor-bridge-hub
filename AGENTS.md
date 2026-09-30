@@ -4,7 +4,7 @@ Guidance for AI agents working in the **Holoscan Sensor Bridge Hub** repository.
 
 ## Repository Structure
 
-Projects live under `<org>/<category>/<project>/`, grouped by the organization that maintains them (for example, `nvidia/operators/<project>/`). Categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Create organization and category folders only when adding their first project, and start new projects from `nvidia/examples/template_app/` or `nvidia/operators/template_op/`.
+Projects live in the folder of the organization that maintains them, either directly (`<org>/<project>/`) or in an optional category folder (for example, `nvidia/operators/<project>/`). Suggested categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Create organization and category folders only when adding their first project, and start new projects from `nvidia/examples/template_app/` or `nvidia/operators/template_op/`.
 
 Projects build on [Holoscan Sensor Bridge](https://github.com/nvidia-holoscan/holoscan-sensor-bridge) (HSB). Changes to HSB itself (host software, operators, FPGA IP, firmware, emulator) belong in the HSB repository, not here.
 

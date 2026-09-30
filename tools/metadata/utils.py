@@ -16,21 +16,14 @@
 
 import os
 from collections.abc import Iterable, Iterator, Sequence
+from fnmatch import fnmatch
 from pathlib import Path
 
-# Contributions live under <org>/<category>/<project>/.
-CATEGORIES = (
-    "operators",
-    "examples",
-    "demos",
-    "fpga",
-    "ai/skills",
-    "benchmarks",
-    "tutorials",
-    "utilities",
-)
-# Top-level directories that do not belong to a contributing organization.
+# Every other top-level folder belongs to a contributing organization, and projects can sit
+# at any depth inside it.
 NON_ORG_DIRS = ("tools",)
+# Build output that can contain unrelated metadata.json files, such as fetched dependencies.
+SKIPPED_DIRS = ("build", "build-*", "install", "install-*")
 
 # Top-level metadata.json keys; each one selects <key>.schema.json.
 PROJECT_TYPES = ("application", "benchmark", "operator", "tutorial")
@@ -39,14 +32,16 @@ SCHEMA_DIR = Path(__file__).resolve().parent
 BASE_SCHEMA_PATH = SCHEMA_DIR / "project.schema.json"
 
 
-def iter_category_dirs(root: str | os.PathLike = ".") -> Iterator[Path]:
-    """Yield the existing <org>/<category> directories under the repository root."""
-    for org in sorted(Path(root).iterdir()):
-        if not org.is_dir() or org.name.startswith(".") or org.name in NON_ORG_DIRS:
-            continue
-        for category in CATEGORIES:
-            if (org / category).is_dir():
-                yield org / category
+def is_skipped_dir(name: str) -> bool:
+    """Return whether a directory holds hidden files or build output rather than projects."""
+    return name.startswith(".") or any(fnmatch(name, pattern) for pattern in SKIPPED_DIRS)
+
+
+def iter_org_dirs(root: str | os.PathLike = ".") -> Iterator[Path]:
+    """Yield the organization directories under the repository root."""
+    for path in sorted(Path(root).iterdir()):
+        if path.is_dir() and path.name not in NON_ORG_DIRS and not is_skipped_dir(path.name):
+            yield path
 
 
 def normalize_language(language: str | None, *, strict: bool = False) -> str:
@@ -89,7 +84,10 @@ def iter_metadata_paths(
     *,
     exclude_patterns: Sequence[str] | None = None,
 ) -> Iterator[str]:
-    """Yield metadata.json paths, skipping paths that contain an excluded segment."""
+    """Yield metadata.json paths outside hidden and build directories.
+
+    Paths that contain an excluded segment are skipped.
+    """
     excludes = [pattern for pattern in (exclude_patterns or []) if pattern]
 
     def _matches_segment(path: str, patterns: Sequence[str]) -> bool:
@@ -105,11 +103,12 @@ def iter_metadata_paths(
         if path.is_file():
             candidates = [str(path)] if path.name == "metadata.json" else []
         else:
-            candidates = sorted(
-                os.path.join(root, "metadata.json")
-                for root, _, files in os.walk(path)
-                if "metadata.json" in files
-            )
+            candidates = []
+            for root, dirs, files in os.walk(path):
+                dirs[:] = [name for name in dirs if not is_skipped_dir(name)]
+                if "metadata.json" in files:
+                    candidates.append(os.path.join(root, "metadata.json"))
+            candidates.sort()
 
         for file_path in candidates:
             if excludes and _matches_segment(file_path, excludes):

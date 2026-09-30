@@ -24,7 +24,7 @@ Maintainers may decline a contribution based on scope, duplication, quality, dep
 
 ## Repository Organization
 
-Place each project in `<org>/<category>/<project>/`, where `<org>` is the organization that maintains it, such as `nvidia`, `adi`, or `altera`, and `<category>` is one of:
+Place each project in the folder of the organization that maintains it, such as `nvidia/`, `adi/`, or `altera/`. Inside that folder, a project can sit directly in `<org>/<project>/` or in an optional category folder, such as `<org>/operators/<project>/`. Suggested categories:
 
 | Category | Contents |
 | --- | --- |
@@ -109,7 +109,7 @@ The HSB repository and [user guide](https://docs.nvidia.com/holoscan/sensor-brid
 
 3. **Develop Your Contribution**
 
-   - Copy a template to `<org>/<category>/<project>/`
+   - Copy a template into your organization's folder, for example to `<org>/<project>/`
    - Meet the [project requirements](#project-requirements)
    - Build and test the project on the configuration listed in its README
 
@@ -120,7 +120,7 @@ The HSB repository and [user guide](https://docs.nvidia.com/holoscan/sensor-brid
    pre-commit run --all-files
 
    # Commit with sign-off (required)
-   git add <org>/<category>/<project>
+   git add <org>/<project>
    git commit -s -m "Add your descriptive commit message"
 
    # Push to your fork

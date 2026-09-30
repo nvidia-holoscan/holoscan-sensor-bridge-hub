@@ -24,8 +24,8 @@ from pathlib import Path
 
 from utils import (
     PROJECT_TYPES,
-    iter_category_dirs,
     iter_metadata_paths,
+    iter_org_dirs,
     list_normalized_languages,
 )
 
@@ -157,7 +157,7 @@ def main(args: argparse.Namespace):
 
     DEFAULT_OUTPUT_FILEPATH = "aggregate_metadata.json"
 
-    repo_paths = args.include or list(iter_category_dirs())
+    repo_paths = args.include or list(iter_org_dirs())
     output_file = args.output or DEFAULT_OUTPUT_FILEPATH
 
     metadata = gather_metadata(repo_paths, exclude_paths=args.exclude)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         type=str,
         nargs="*",
         required=False,
-        help="Path(s) to search for metadata files (default: every <org>/<category> directory)",
+        help="Path(s) to search for metadata files (default: every organization directory)",
     )
     parser.add_argument(
         "--exclude",

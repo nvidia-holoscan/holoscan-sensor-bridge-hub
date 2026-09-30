@@ -19,7 +19,7 @@ A curated collection of sensor integrations, demos, and related projects for [Ho
 
 ## Repository Organization
 
-Projects are grouped by the organization that maintains them, under `<org>/<category>/<project>/`:
+Projects are grouped by the organization that maintains them. Inside an organization folder, a project can sit in a category folder or directly under the organization:
 
 ```text
 holoscan-sensor-bridge-hub/
@@ -27,11 +27,12 @@ holoscan-sensor-bridge-hub/
 │   ├── examples/template_app/   # application template
 │   └── operators/template_op/   # operator template
 ├── <org>/                       # for example adi/ or altera/
-│   └── <category>/<project>/
+│   ├── <category>/<project>/    # optional category folder
+│   └── <project>/
 └── tools/                       # opt-in shared helpers and CI checks
 ```
 
-Categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Organization and category folders are created with their first project.
+Suggested categories are `operators`, `examples`, `demos`, `fpga`, `ai/skills`, `benchmarks`, `tutorials`, and `utilities`. Organization and category folders are created with their first project.
 
 Each project is self-contained: it builds on its own, and its `README.md` lists the hardware, the tested Holoscan Sensor Bridge and Holoscan SDK versions, and the build, run, and test commands. Each project is maintained by its contributor; hosting a project here does not imply NVIDIA certification or maintenance.
 

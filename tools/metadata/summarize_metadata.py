@@ -20,7 +20,7 @@ from collections import defaultdict
 import pandas as pd
 import semver
 from gather_metadata import gather_metadata
-from utils import iter_category_dirs
+from utils import iter_org_dirs
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__file__)
@@ -39,7 +39,7 @@ DEFAULT_SORT_COLUMNS = ["project_type", "name"]
 def collect_metadata() -> pd.DataFrame:
     """Gather project metadata into a DataFrame"""
     # Ingest project metadata files
-    metadata = gather_metadata(list(iter_category_dirs()))
+    metadata = gather_metadata(list(iter_org_dirs()))
     for entry in metadata:
         entry["metadata"]["project_type"] = entry["project_type"]
     frames = [pd.json_normalize(entry["metadata"]) for entry in metadata]
