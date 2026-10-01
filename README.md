@@ -43,14 +43,15 @@ To start a new project, copy the [application template](./nvidia/examples/templa
 
 ## Linting
 
-Install the lint tools and run all checks from the repository root:
+Install the lint tools in a virtual environment and run all checks from the repository root:
 
 ```sh
-python3 -m pip install -r tools/lint/requirements.txt
-pre-commit run --all-files
+python3 -m venv .venv
+.venv/bin/python -m pip install -r tools/lint/requirements.txt
+.venv/bin/pre-commit run --all-files
 ```
 
-Many hooks fix issues in place; rerun `pre-commit run --all-files` until it passes. CI runs the same checks, plus copyright, link, and `metadata.json` checks.
+The virtual environment avoids the `externally-managed-environment` error that `pip install` raises on systems with an externally managed Python. Many hooks fix issues in place; rerun the last command until it passes. CI runs the same checks, plus copyright, link, and `metadata.json` checks. See [CONTRIBUTING.md](./CONTRIBUTING.md#linting) for more on the setup.
 
 ## Contributing
 
