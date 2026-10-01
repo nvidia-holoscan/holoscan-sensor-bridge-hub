@@ -152,7 +152,7 @@ source .venv/bin/activate
 python3 -m pip install pre-commit
 ```
 
-On Ubuntu 24.04 and other distributions with an externally managed Python, running `pip install` outside a virtual environment fails with `error: externally-managed-environment` ([PEP 668](https://peps.python.org/pep-0668/)). The virtual environment above avoids this; alternatively, `apt install pre-commit` or `pipx install pre-commit` installs the command without pip.
+On systems with an externally managed Python, running `pip install` outside a virtual environment fails with `error: externally-managed-environment` ([PEP 668](https://peps.python.org/pep-0668/)). The virtual environment above avoids this; alternatively, `apt install pre-commit` or `pipx install pre-commit` installs the command without pip.
 
 To run the tools outside pre-commit as well, for example in an editor, install the pinned versions with `python3 -m pip install -r tools/lint/requirements.txt` (in the same virtual environment).
 
