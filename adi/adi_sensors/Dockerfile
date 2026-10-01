@@ -39,7 +39,7 @@ COPY adi/adi_sensors/patches /opt/adi/patches
 RUN python3 /opt/adi/prepare_hsb.py /opt/hsb
 
 COPY adi/adi_sensors /opt/adi
-ARG CUDA_ARCHITECTURES=89
+ARG CUDA_ARCHITECTURES="86 87 89"
 ARG BUILD_JOBS=4
 RUN cmake -S /opt/adi -B /opt/adi/build -G Ninja \
       -DHSB_SOURCE_DIR=/opt/hsb \
