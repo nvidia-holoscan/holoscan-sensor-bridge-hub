@@ -142,14 +142,27 @@ Thanks in advance for your patience as we review your contributions. We do appre
 
 ### Linting
 
-Install the lint tools and run all checks from the repository root:
+The checks run through [pre-commit](https://pre-commit.com/), which installs each hook (ruff, black, isort, codespell, cpplint, markdownlint) in its own isolated environment. The only tool you need to install is `pre-commit` itself.
+
+Install it in a virtual environment so it does not touch the system Python:
 
 ```bash
-python3 -m pip install -r tools/lint/requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install pre-commit
+```
+
+On Ubuntu 24.04 and other distributions with an externally managed Python, running `pip install` outside a virtual environment fails with `error: externally-managed-environment` ([PEP 668](https://peps.python.org/pep-0668/)). The virtual environment above avoids this; alternatively, `apt install pre-commit` or `pipx install pre-commit` installs the command without pip.
+
+To run the tools outside pre-commit as well, for example in an editor, install the pinned versions with `python3 -m pip install -r tools/lint/requirements.txt` (in the same virtual environment).
+
+Run all checks from the repository root:
+
+```bash
 pre-commit run --all-files
 ```
 
-Many hooks fix issues in place. Rerun `pre-commit run --all-files` until it passes.
+Many hooks fix issues in place and report a failure for the files they changed. Review those edits, commit them, and rerun until every hook passes. CI runs the same checks but only reports pass or fail; it does not push fixes to your branch.
 
 ### Coding Guidelines
 
