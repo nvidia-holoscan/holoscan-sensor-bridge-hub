@@ -1,0 +1,26 @@
+diff --git a/src/hololink/core/enumerator.cpp b/src/hololink/core/enumerator.cpp
+index 84026d5..246916c 100644
+--- a/src/hololink/core/enumerator.cpp
++++ b/src/hololink/core/enumerator.cpp
+@@ -680,7 +680,7 @@ void Enumerator::configure_default_enumeration_strategies()
+     // For those bootp-v1 configurations, provide default strategies
+     Metadata hololink_lite_metadata;
+     hololink_lite_metadata["board_description"] = "hololink-lite";
+-    hololink_lite_metadata["gpio_pin_count"] = 16;
++    hololink_lite_metadata["gpio_pin_count"] = 32;
+     auto hololink_lite_enumeration_strategy = std::make_shared<BasicEnumerationStrategy>(
+         hololink_lite_metadata,
+         3, // total_sensors (sensor 2 is the I2S audio interface)
+diff --git a/src/hololink/core/hololink.cpp b/src/hololink/core/hololink.cpp
+index 3f67080..ddace6b 100644
+--- a/src/hololink/core/hololink.cpp
++++ b/src/hololink/core/hololink.cpp
+@@ -1120,7 +1120,7 @@ public:
+         const std::shared_ptr<Timeout>& in_timeout) override
+     {
+         const uint32_t write_command_count = write_command_bytes.size();
+-        if (write_command_count >= 16) { // available bits in num_bytes2
++        if (write_command_count >= 64) { // available bits in num_bytes2
+             throw std::runtime_error(
+                 fmt::format("Size of combined write_command_bytes and write_data_bytes is too large: "
+                             "\"{}\", has to be less than 16",
