@@ -31,7 +31,9 @@ docker build --progress=plain \
 Architecture `89` targets Ada GPUs. Set `CUDA_ARCHITECTURES` to the compute
 capability of your deployment GPU; building does not require GPU access.
 This Dockerfile targets x86_64 with CUDA 13. Jetson/IGX/ARM builds need a matching
-platform environment and are not covered by this container recipe.
+platform environment and are not covered by this container recipe. 
+
+NOTE adi/adi_sensors/Dockerfile can build for Jetson Thor/IGX/DGX Spark/AGX Orin
 
 The build prepares an HSB checkout in `/opt/hsb`, applies the two ADI patches,
 and compiles HSB and the ADI examples together. It installs the results under

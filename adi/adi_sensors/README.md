@@ -166,7 +166,7 @@ Run all host-side commands from the root of the Holoscan Sensor Bridge repositor
 docker build \
   -f adi/adi_sensors/Dockerfile \
   --build-arg BASE_IMAGE=nvcr.io/nvidia/clara-holoscan/holoscan:v4.6.0-cuda13 \
-  -t holoscan-sensor-bridge-hub:dev .
+  -t hsb-adi:2.7.0 .
 ```
 
 ### 2. Allow X11 Access for GUI Applications
@@ -185,20 +185,22 @@ docker run --rm -it \
   --gpus all \
   --net host \
   --ipc=host \
+  --ulimit stack=67108864 \
   -e NVIDIA_DRIVER_CAPABILITIES=graphics,video,compute,utility,display \
   -e NVIDIA_VISIBLE_DEVICES=all \
   -e DISPLAY="$DISPLAY" \
   -v "$(pwd)":/workspace/holoscan-sensor-bridge-hub \
   -w /workspace/holoscan-sensor-bridge-hub \
-  holoscan-sensor-bridge-hub:dev
+  hsb-adi:2.7.0
 ```
 
 ### 4. Configure the Build Inside the Container
 
-Docker build will genenrate all executables. They should be already in path. To build separately, you can use below steps.
+Docker build will genenrate all executables. They should be already in path. To build separately, you can use below steps. Ensure step 3 has been executed first.
 
 ```bash
 export LD_LIBRARY_PATH=/opt/nvidia/holoscan/lib:${LD_LIBRARY_PATH}
+cd adi/adi_sensors
 cmake -S . -B build
 ```
 
