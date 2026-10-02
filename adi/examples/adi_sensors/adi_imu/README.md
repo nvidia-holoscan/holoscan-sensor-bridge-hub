@@ -1,7 +1,7 @@
 # ADI IMU Holoscan to ROS 2 Bridge
 
 For the Hub build and validated container commands, start with the
-[ADI Sensors guide](../README.md). The hardware notes below originate from
+[ADI Sensors build guide](../code_README.md). The hardware notes below originate from
 the ADI HSB fork; its container paths differ from this integration.
 
 This repository provides a high-performance, containerized integration between an

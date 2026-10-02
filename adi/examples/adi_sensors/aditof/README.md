@@ -1,7 +1,7 @@
 # ADI ToF Camera Player (`adcam_player`)
 
 For the Hub build and validated container commands, start with the
-[ADI Sensors guide](../README.md). The hardware notes below originate from
+[ADI Sensors build guide](../code_README.md). The hardware notes below originate from
 the ADI HSB fork; its container paths differ from this integration.
 
 A Holoscan-based application for capturing, processing, and visualizing depth
@@ -243,11 +243,10 @@ ls adi/examples/adi_sensors/aditof/
 # README.md           — This file
 ```
 
-### 5. Rebuilt output binary
+### 5. Built binary
 
-```text
-./build/adi/examples/adi_sensors/aditof/cpp/adcam_player
-```
+For the Hub build, `adcam_player` is installed to `install/adi-standalone/bin/`
+and is on `PATH` in the container. See [code_README.md](../code_README.md).
 
 ---
 
