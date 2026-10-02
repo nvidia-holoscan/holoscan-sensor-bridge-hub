@@ -1,0 +1,39 @@
+name: Experiment two-pass url check
+
+# Temporary: lychee first (no fail, JSON report), then re-check its failures with
+# curl_cffi browser impersonation. Validates the recheck script + lychee JSON
+# parsing. Expected RED here because the fixture contains intentional dead links.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-pass:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: lychee (report only, do not fail)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          workingDirectory: .github/workflows
+          args: >-
+            --accept=200,403,429
+            --no-progress
+            --root-dir=${{ github.workspace }}
+            --format=json
+            --output=lychee-report.json
+            ${{ github.workspace }}/.github/workflows/twopass-fixture.md
+          fail: false
+          failIfEmpty: false
+      - name: Show lychee report (debug)
+        run: cat .github/workflows/lychee-report.json || echo "no report"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install curl_cffi
+      - name: Re-check lychee failures with impersonation
+        run: python .github/workflows/scripts/recheck_failed_urls.py .github/workflows/lychee-report.json
