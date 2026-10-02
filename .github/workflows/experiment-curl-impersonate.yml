@@ -19,29 +19,33 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install curl_cffi
-      - name: Check vendor URLs with browser impersonation
+      - name: Verify existence via HEAD (real must be 200, bogus must be 404)
         run: |
           python - <<'PY'
           import sys
           from curl_cffi import requests
 
-          urls = [
+          real = [
               "https://www.analog.com/en/products/adtf3175.html",
               "https://www.analog.com/en/products/adis16505.html",
               "https://www.analog.com/en/products/adis16607.html",
               "https://www.analog.com/en/products/ad2428.html",
               "https://www.analog.com/en/products/ad2427.html",
-              "https://github.com/nvidia-holoscan/holoscan-sensor-bridge",  # control
           ]
-          bad = []
-          for u in urls:
-              try:
-                  r = requests.head(u, impersonate="chrome", timeout=30, allow_redirects=True)
-                  print(r.status_code, u)
-                  if r.status_code >= 400 and r.status_code not in (403, 429):
-                      bad.append((u, r.status_code))
-              except Exception as e:
-                  print("ERR", u, type(e).__name__, e)
-                  bad.append((u, str(e)))
-          sys.exit(1 if bad else 0)
+          bogus = "https://www.analog.com/en/products/zzz-nonexistent-xyz-98765.html"
+
+          def head(u):
+              return requests.head(u, impersonate="chrome", timeout=30, allow_redirects=True).status_code
+
+          fail = []
+          for u in real:
+              s = head(u)
+              print("REAL ", s, u)
+              if s != 200:
+                  fail.append((u, s))  # a real page must resolve to 200
+          s = head(bogus)
+          print("BOGUS", s, bogus)
+          if s != 404:
+              fail.append((bogus, s))  # the check must detect a missing page as 404
+          sys.exit(1 if fail else 0)
           PY
