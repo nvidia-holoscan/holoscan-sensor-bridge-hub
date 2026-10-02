@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      issues: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -36,44 +35,56 @@ jobs:
       run: |
         echo "Files being checked: ${{ steps.changed-files.outputs.changed_files_list }}"
 
+    # Pass 1: lychee checks everything. It does not fail the job; its failures are
+    # written to a JSON report and re-verified in pass 2, because lychee cannot
+    # reach some sites that gate on TLS fingerprint (e.g. analog.com behind a WAF).
     - name: URL checker (PR - changed files only)
       if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
-      id: lychee-pr
       uses: lycheeverse/lychee-action@v2
       with:
         workingDirectory: .github/workflows
+        format: json
+        output: lychee-report.json
+        jobSummary: false
         args: >-
           --accept=200,403,429
           --max-retries=5
           --retry-wait-time=2
-          --user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-          --verbose
           --no-progress
           --root-dir=${{ github.workspace }}
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2'
           ${{ steps.changed-files.outputs.changed_files_list }}
-        fail: true
+        fail: false
         failIfEmpty: false
-        jobSummary: true
 
     - name: URL checker (all files)
       if: github.event_name == 'push'
-      id: lychee-main
       uses: lycheeverse/lychee-action@v2
       with:
         workingDirectory: .github/workflows
+        format: json
+        output: lychee-report.json
+        jobSummary: false
         args: >-
           --accept=200,403,429
           --max-retries=5
           --retry-wait-time=2
-          --user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-          --verbose
           --no-progress
           --root-dir=${{ github.workspace }}
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2'
           '${{ github.workspace }}/**/*.md'
           '${{ github.workspace }}/**/*.html'
           '${{ github.workspace }}/**/*.rst'
-        fail: true
+        fail: false
         failIfEmpty: false
-        jobSummary: true
+
+    # Pass 2: re-verify lychee's failures with a browser-impersonating HEAD. A URL
+    # stays failed only if it cannot be confirmed (not HTTP 200), so real dead
+    # links (404) still fail while WAF false positives are rescued.
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Re-check lychee failures with browser impersonation
+      run: |
+        pip install curl_cffi
+        python .github/workflows/scripts/recheck_failed_urls.py .github/workflows/lychee-report.json
