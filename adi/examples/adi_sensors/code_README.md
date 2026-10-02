@@ -21,7 +21,7 @@ Install Docker and the NVIDIA Container Toolkit. Run from the Hub repository roo
 
 ```sh
 docker build --progress=plain \
-  -f adi/adi_sensors/Dockerfile \
+  -f adi/examples/adi_sensors/Dockerfile \
   --build-arg BASE_IMAGE=nvcr.io/nvidia/clara-holoscan/holoscan:v4.4.0-cuda13@sha256:7af522a5ab43f5be6503520dc2afda1f4690b55079ebaca125910a1ec0d3df19 \
   --build-arg CUDA_ARCHITECTURES=89 \
   --build-arg BUILD_JOBS=4 \
@@ -31,9 +31,9 @@ docker build --progress=plain \
 Architecture `89` targets Ada GPUs. Set `CUDA_ARCHITECTURES` to the compute
 capability of your deployment GPU; building does not require GPU access.
 This Dockerfile targets x86_64 with CUDA 13. Jetson/IGX/ARM builds need a matching
-platform environment and are not covered by this container recipe. 
+platform environment and are not covered by this container recipe.
 
-NOTE adi/adi_sensors/Dockerfile can build for Jetson Thor/IGX/DGX Spark/AGX Orin
+NOTE adi/examples/adi_sensors/Dockerfile can build for Jetson Thor/IGX/DGX Spark/AGX Orin
 
 The build prepares an HSB checkout in `/opt/hsb`, applies the two ADI patches,
 and compiles HSB and the ADI examples together. It installs the results under
@@ -81,8 +81,8 @@ source paths correspond to `/opt/adi/`; C++ executables are already on `PATH`.
 Inside a compatible development environment containing the Dockerfile's dependencies:
 
 ```sh
-python3 adi/adi_sensors/prepare_hsb.py build/adi-hsb-source
-cmake -S adi/adi_sensors -B build/adi-standalone -G Ninja \
+python3 adi/examples/adi_sensors/prepare_hsb.py build/adi-hsb-source
+cmake -S adi/examples/adi_sensors -B build/adi-standalone -G Ninja \
   -DHSB_SOURCE_DIR="$PWD/build/adi-hsb-source" \
   -DCMAKE_CUDA_ARCHITECTURES=89 \
   -DCMAKE_BUILD_TYPE=Release \
@@ -92,7 +92,7 @@ cmake --install build/adi-standalone
 ctest --test-dir build/adi-standalone --output-on-failure
 PATH="$PWD/install/adi-standalone/bin:$PATH" \
 PYTHONPATH="$PWD/install/adi-standalone/python${PYTHONPATH:+:$PYTHONPATH}" \
-  python3 adi/adi_sensors/smoke_test.py
+  python3 adi/examples/adi_sensors/smoke_test.py
 ```
 
 `prepare_hsb.py` clones the release into a new directory, verifies its commit,

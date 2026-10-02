@@ -130,16 +130,16 @@ make -j$(nproc) audio_viz_disp
 Executable will be in build/adi directory.
 
 Parameters available for tweaking (i.e. calibration/tuning)
-In adi/adi_sensors/a2baudio/app/audio_viz.cpp
+In adi/examples/adi_sensors/a2baudio/app/audio_viz.cpp
  #define TRACKING_FOV_DEGREES 90.0f    <- based on the limits on the Holoviz edges (i.e. +/- 45 default)
  #define TRACKING_EMA_ALPHA 0.3f       <- Smoothing factor (0.0 to 1.0) - used by moving average filter, lower = slower response
  #define TRACKING_HANG_FRAMES 10       <- 10 frames = 1.0 seconds at 10Hz, # of frames allowed for voice activity logic,
              holds allows for x frames of silence for tracking voice.
 
-In adi/adi_sensors/a2baudio/audio_beamformer/audio_beamformer_op.hpp
+In adi/examples/adi_sensors/a2baudio/audio_beamformer/audio_beamformer_op.hpp
  int max_lag_ = 8  <- maximum lag allowed in xcorr based on speed of sound and max distance between mics in array
 
-In adi/adi_sensors/a2baudio/audio_beamformer/audio_beamformer_op.cu, x/y coordinates for each mic in cms relative to mic0.
+In adi/examples/adi_sensors/a2baudio/audio_beamformer/audio_beamformer_op.cu, x/y coordinates for each mic in cms relative to mic0.
 However the actual math requires the normal to the array and NOT looking at the array.
  The values used are based on a circular array (4.25 cm radius) with Mic 0 in the center but looking at the array
  here are the values:

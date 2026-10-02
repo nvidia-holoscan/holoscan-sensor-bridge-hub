@@ -27,23 +27,23 @@ container to match the user in the container.  For the CycloneDDS, the
 `<NetworkInterfaceAddress>` must match the network interface name used.
 
 FILE STRUCTURE
-adi/adi_sensors/adi_imu/app/adi_imu_ros2.py
+adi/examples/adi_sensors/adi_imu/app/adi_imu_ros2.py
 The primary execution script. Defines the Holoscan application graph,
 instantiates the C++ hardware operator, and handles 32-bit payload parsing,
 physical scaling, dynamic calibration, and ROS 2 publishing.
 
-adi/adi_sensors/adi_imu/app/adi_imu_config.yaml
+adi/examples/adi_sensors/adi_imu/app/adi_imu_config.yaml
 The hardware configuration file. Defines the network target, SPI parameters,
 hardware pinouts, and physical scaling constants. (See "Configuration Details" below).
 
-adi/adi_sensors/adi_imu/adi_imu_op.cpp
+adi/examples/adi_sensors/adi_imu/adi_imu_op.cpp
 The low-level C++ hardware driver. Implements a polymorphic Strategy Pattern
 (Adis16505Driver and Adis16607Driver) to safely isolate Full-Duplex and
 Half-Duplex SPI transactions. It dynamically handles DPLL lock sequencing,
 CRC4 payload validation, and injects user calibration biases directly into
 IMU during initialization.
 
-adi/adi_sensors/adi_imu/app/adi_imu_visualization.launch.py
+adi/examples/adi_sensors/adi_imu/app/adi_imu_visualization.launch.py
 A ROS 2 launch file designed to be run OUTSIDE the container. It spins up a
 properly tuned Madgwick filter and an instance of RViz2 pre-configured with
 Best Effort QoS and 3D camera controls.
@@ -137,7 +137,7 @@ Without these commands, the baseline will not go past 190ish Hz IMU message rate
 RUN INSTRUCTIONS
 
 Run the primary Python node from the root directory inside the container:
-cd adi/adi_sensors/adi_imu/app
+cd adi/examples/adi_sensors/adi_imu/app
 python3 adi_imu_ros2.py [Arguments]
 
 Arguments:

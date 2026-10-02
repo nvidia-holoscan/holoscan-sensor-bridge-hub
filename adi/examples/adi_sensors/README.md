@@ -153,7 +153,7 @@ adi/
 - NVIDIA Container Toolkit
 - Access to the Holoscan SDK container image used by the build
 - CMake and the compiler toolchain supplied by the container
-- Python dependencies listed in `adi/adi_sensors/requirements.txt`
+- Python dependencies listed in `adi/examples/adi_sensors/requirements.txt`
 - ROS 2 Humble or Jazzy for IMU ROS 2 workflows
 
 ## Build
@@ -164,7 +164,7 @@ Run all host-side commands from the root of the Holoscan Sensor Bridge repositor
 
 ```bash
 docker build \
-  -f adi/adi_sensors/Dockerfile \
+  -f adi/examples/adi_sensors/Dockerfile \
   --build-arg BASE_IMAGE=nvcr.io/nvidia/clara-holoscan/holoscan:v4.6.0-cuda13 \
   -t hsb-adi:2.7.0 .
 ```
@@ -200,7 +200,7 @@ Docker build will genenrate all executables. They should be already in path. To 
 
 ```bash
 export LD_LIBRARY_PATH=/opt/nvidia/holoscan/lib:${LD_LIBRARY_PATH}
-cd adi/adi_sensors
+cd adi/examples/adi_sensors
 cmake -S . -B build
 ```
 
@@ -219,7 +219,7 @@ cmake --build build --target <target-name> -j"$(nproc)"
 ### 6. Run the Smoke Test
 
 ```bash
-python3 adi/adi_sensors/smoke_test.py
+python3 adi/examples/adi_sensors/smoke_test.py
 ```
 
 ## Module 1 – ADCAM3175-2M-EBZ Time-of-Flight Camera
@@ -257,7 +257,7 @@ Typical applications include spatial perception, robot navigation, obstacle dete
 ### Example
 
 ```bash
-python3 adi/adi_sensors/aditof/python/adcam_player.py
+python3 adi/examples/adi_sensors/aditof/python/adcam_player.py
 ```
 
 For detailed options and firmware procedures, see [`aditof/README.md`](aditof/README.md).
@@ -321,13 +321,13 @@ Processing    ROS 2
 Run the IMU ROS 2 application:
 
 ```bash
-python3 adi/adi_sensors/adi_imu/app/adi_imu_ros2.py
+python3 adi/examples/adi_sensors/adi_imu/app/adi_imu_ros2.py
 ```
 
 Run RViz visualization in a separate shell with the ROS 2 environment sourced:
 
 ```bash
-ros2 launch adi/adi_sensors/adi_imu/app/adi_imu_visualization.launch.py
+ros2 launch adi/examples/adi_sensors/adi_imu/app/adi_imu_visualization.launch.py
 ```
 
 Typical use cases include visual-inertial odometry, robot localization, navigation, humanoid robotics, sensor fusion, and autonomous mobile robots.
