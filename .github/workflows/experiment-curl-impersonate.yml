@@ -1,0 +1,47 @@
+name: Experiment curl-impersonate
+
+# Temporary experiment: can curl_cffi (browser TLS fingerprint impersonation)
+# verify the analog.com pages from a GitHub runner, where lychee and
+# markdown-link-check are blocked by the WAF? Delete after the result.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install curl_cffi
+      - name: Check vendor URLs with browser impersonation
+        run: |
+          python - <<'PY'
+          import sys
+          from curl_cffi import requests
+
+          urls = [
+              "https://www.analog.com/en/products/adtf3175.html",
+              "https://www.analog.com/en/products/adis16505.html",
+              "https://www.analog.com/en/products/adis16607.html",
+              "https://www.analog.com/en/products/ad2428.html",
+              "https://www.analog.com/en/products/ad2427.html",
+              "https://github.com/nvidia-holoscan/holoscan-sensor-bridge",  # control
+          ]
+          bad = []
+          for u in urls:
+              try:
+                  r = requests.head(u, impersonate="chrome", timeout=30, allow_redirects=True)
+                  print(r.status_code, u)
+                  if r.status_code >= 400 and r.status_code not in (403, 429):
+                      bad.append((u, r.status_code))
+              except Exception as e:
+                  print("ERR", u, type(e).__name__, e)
+                  bad.append((u, str(e)))
+          sys.exit(1 if bad else 0)
+          PY
