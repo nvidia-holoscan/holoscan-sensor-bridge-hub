@@ -1,0 +1,26 @@
+name: Experiment markdown-link-check
+
+# Temporary experiment: does markdown-link-check (HTTP/1.1) reach analog.com
+# from GitHub runners where lychee (HTTP/2) fails? Delete after the result.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mlc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run markdown-link-check on the canary
+        run: |
+          npm install -g markdown-link-check@3
+          markdown-link-check --verbose \
+            --config .github/workflows/markdown-link-check.json \
+            .github/workflows/link-check-canary.md
