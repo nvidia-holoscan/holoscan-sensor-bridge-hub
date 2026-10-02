@@ -51,82 +51,83 @@ The ADI sensor package is organized into three primary sensor domains:
 
 ```text
 adi/
-└── adi_sensors/
-    ├── README.md
-    ├── requirements.txt
-    ├── Dockerfile
-    ├── CMakeLists.txt
-    ├── prepare_hsb.py
-    ├── code_README.md
-    ├── smoke_test.py
-    ├── metadata.json
-    ├── patches/
-    │   └── 0001-adi-spi-gpio.patch
-    ├── aditof/
-    │   ├── README.md
-    │   ├── CMakeLists.txt
-    │   ├── adi_manifest.yaml
-    │   ├── python/
-    │   │   ├── adcam.py
-    │   │   └── adcam_player.py
-    │   └── cpp/
-    │       ├── CMakeLists.txt
-    │       ├── adcam_player.cpp
-    │       ├── adcam_lib.hpp
-    │       ├── adcam_lib.cpp
-    │       ├── adcam_calibration.hpp
-    │       ├── adcam_calibration.cpp
-    │       ├── adcam_unpack_op.hpp
-    │       ├── adcam_unpack_op.cpp
-    │       ├── adcam_unpack_op.cu
-    │       ├── programmer.hpp
-    │       ├── programmer.cpp
-    │       ├── adsd3500_flash.hpp
-    │       ├── adsd3500_flash.cpp
-    │       ├── compute_crc.hpp
-    │       ├── compute_crc.cpp
-    │       └── crc_table.cpp
-    ├── adi_imu/
-    │   ├── README.md
-    │   ├── CPPLINT.cfg
-    │   ├── CMakeLists.txt
-    │   ├── adi_imu_op.hpp
-    │   ├── adi_imu_op.cpp
-    │   ├── app/
-    │   │   ├── adi_imu_config.yaml
-    │   │   ├── adi_imu_config2.yaml
-    │   │   ├── adi_imu_ros2.py
-    │   │   ├── adi_imu_visualization.launch.py
-    │   │   ├── config.xml
-    │   │   ├── ros_setup.sh
-    │   │   └── packed_frame.bin
-    │   └── python/
-    │       ├── __init__.py
-    │       ├── adi_imu_op_python.cpp
-    │       └── adi_imu_op_pydoc.hpp
-    └── a2baudio/
+└── examples/
+    └── adi_sensors/
         ├── README.md
+        ├── requirements.txt
+        ├── Dockerfile
         ├── CMakeLists.txt
-        ├── app/
+        ├── prepare_hsb.py
+        ├── code_README.md
+        ├── smoke_test.py
+        ├── metadata.json
+        ├── patches/
+        │   └── 0001-adi-spi-gpio.patch
+        ├── aditof/
+        │   ├── README.md
         │   ├── CMakeLists.txt
-        │   └── audio_viz.cpp
-        ├── i2s/
+        │   ├── adi_manifest.yaml
+        │   ├── python/
+        │   │   ├── adcam.py
+        │   │   └── adcam_player.py
+        │   └── cpp/
+        │       ├── CMakeLists.txt
+        │       ├── adcam_player.cpp
+        │       ├── adcam_lib.hpp
+        │       ├── adcam_lib.cpp
+        │       ├── adcam_calibration.hpp
+        │       ├── adcam_calibration.cpp
+        │       ├── adcam_unpack_op.hpp
+        │       ├── adcam_unpack_op.cpp
+        │       ├── adcam_unpack_op.cu
+        │       ├── programmer.hpp
+        │       ├── programmer.cpp
+        │       ├── adsd3500_flash.hpp
+        │       ├── adsd3500_flash.cpp
+        │       ├── compute_crc.hpp
+        │       ├── compute_crc.cpp
+        │       └── crc_table.cpp
+        ├── adi_imu/
+        │   ├── README.md
+        │   ├── CPPLINT.cfg
         │   ├── CMakeLists.txt
-        │   ├── i2s_receiver_op.hpp
-        │   └── i2s_receiver_op.cpp
-        ├── audio_waveform/
-        │   ├── CMakeLists.txt
-        │   ├── audio_waveform_op.hpp
-        │   └── audio_waveform_op.cu
-        ├── audio_beamformer/
-        │   ├── CMakeLists.txt
-        │   ├── audio_beamformer_op.hpp
-        │   ├── audio_beamformer_op.cpp
-        │   └── audio_beamformer_op.cu
-        └── audio_filewriter/
+        │   ├── adi_imu_op.hpp
+        │   ├── adi_imu_op.cpp
+        │   ├── app/
+        │   │   ├── adi_imu_config.yaml
+        │   │   ├── adi_imu_config2.yaml
+        │   │   ├── adi_imu_ros2.py
+        │   │   ├── adi_imu_visualization.launch.py
+        │   │   ├── config.xml
+        │   │   ├── ros_setup.sh
+        │   │   └── packed_frame.bin
+        │   └── python/
+        │       ├── __init__.py
+        │       ├── adi_imu_op_python.cpp
+        │       └── adi_imu_op_pydoc.hpp
+        └── a2baudio/
+            ├── README.md
             ├── CMakeLists.txt
-            ├── audio_file_writer_op.hpp
-            └── audio_file_writer_op.cpp
+            ├── app/
+            │   ├── CMakeLists.txt
+            │   └── audio_viz.cpp
+            ├── i2s/
+            │   ├── CMakeLists.txt
+            │   ├── i2s_receiver_op.hpp
+            │   └── i2s_receiver_op.cpp
+            ├── audio_waveform/
+            │   ├── CMakeLists.txt
+            │   ├── audio_waveform_op.hpp
+            │   └── audio_waveform_op.cu
+            ├── audio_beamformer/
+            │   ├── CMakeLists.txt
+            │   ├── audio_beamformer_op.hpp
+            │   ├── audio_beamformer_op.cpp
+            │   └── audio_beamformer_op.cu
+            └── audio_filewriter/
+                ├── CMakeLists.txt
+                ├── audio_file_writer_op.hpp
+                └── audio_file_writer_op.cpp
 ```
 
 ## Module Documentation
