@@ -1,0 +1,23 @@
+{
+  "application": {
+    "name": "ADI Sensors",
+    "description": "Source-based integration of ADI ToF, IMU, and A2B audio examples with Holoscan Sensor Bridge.",
+    "authors": [
+      {"name": "Sib Sankar Dey", "affiliation": "Analog Devices"},
+      {"name": "Sivasubramaniyan Padmanaban", "affiliation": "Analog Devices"}
+    ],
+    "language": "C++",
+    "dockerfile": "adi/examples/adi_sensors/Dockerfile",
+    "version": "0.1.0",
+    "changelog": {"0.1.0": "Add standalone source and Docker builds for the ADI sensor examples."},
+    "holoscan_sdk": {"minimum_required_version": "4.4.0", "tested_versions": ["4.6.0"]},
+    "platforms": ["x86_64", "aarch64"],
+    "tags": ["Sensor Bridge", "ADI", "ToF", "IMU", "Audio"],
+    "ranking": 4,
+    "requirements": {
+      "hardware": [
+        {"name": "ADI sensor and Sensor Bridge", "description": "See the sensor-specific guide for FPGA, firmware, and wiring requirements."}
+      ]
+    }
+  }
+}
