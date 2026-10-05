@@ -20,8 +20,8 @@ jobs:
       env:
         BASE_REF: ${{ github.base_ref }}
       run: |
-        # Keep filenames in a file only — never pass them through ${{ }} into
-        # run:/action args (GitHub Actions script injection / lychee-action eval).
+        # Keep filenames in a file only — never interpolate them into run/action
+        # args (GitHub Actions script injection / lychee-action eval).
         # BASE_REF is passed via env so branch names cannot inject into the script.
         if git diff --name-only --diff-filter=d "origin/${BASE_REF}..HEAD" | grep -E '\.(md|html|rst)$' > changed_files.txt; then
           if [ -s changed_files.txt ]; then
@@ -46,7 +46,7 @@ jobs:
     # written to a JSON report and re-verified in pass 2, because lychee cannot
     # reach some sites that gate on TLS fingerprint (e.g. analog.com behind a WAF).
     # PR path invokes lychee directly with a file-backed argv list so attacker-
-    # controlled filenames never enter ${{ }} / eval (lychee-action uses eval).
+    # controlled filenames never enter workflow expressions or lychee-action eval.
     - name: URL checker (PR - changed files only)
       if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
       env:
@@ -57,6 +57,7 @@ jobs:
         # Same default version as lycheeverse/lychee-action@v2
         LYCHEE_VERSION=v0.16.1
         FILENAME=lychee-x86_64-unknown-linux-gnu.tar.gz
+        REPORT=".github/workflows/lychee-report.json"
         curl -sfLO "https://github.com/lycheeverse/lychee/releases/download/lychee-${LYCHEE_VERSION}/${FILENAME}"
         tar -xzf "${FILENAME}"
         install -t "$HOME/.local/bin" -D lychee
@@ -64,6 +65,7 @@ jobs:
         export PATH="$HOME/.local/bin:$PATH"
 
         mapfile -t files < changed_files_abs.txt
+        rm -f "${REPORT}"
         set +e
         lychee \
           --accept=200,403,429 \
@@ -73,9 +75,15 @@ jobs:
           --base="${GITHUB_WORKSPACE}" \
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2' \
           --format json \
-          --output .github/workflows/lychee-report.json \
+          --output "${REPORT}" \
           "${files[@]}"
-        # fail: false — pass 2 re-verifies failures
+        set -e
+        # Link failures are re-verified in pass 2, but a missing report means
+        # lychee never ran successfully — fail rather than skipping URL checks.
+        if [ ! -f "${REPORT}" ]; then
+          echo "lychee did not produce ${REPORT}" >&2
+          exit 1
+        fi
         exit 0
 
     - name: URL checker (all files)
