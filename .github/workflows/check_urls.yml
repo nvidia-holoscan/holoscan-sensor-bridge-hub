@@ -17,45 +17,66 @@ jobs:
     - name: Get changed files in the PR
       if: github.event_name == 'pull_request'
       id: changed-files
+      env:
+        BASE_REF: ${{ github.base_ref }}
       run: |
-        # Get changed files using git diff
-        if git diff --name-only --diff-filter=d origin/${{ github.base_ref }}..HEAD | grep -E '\.(md|html|rst)$' > changed_files.txt; then
+        # Keep filenames in a file only — never pass them through ${{ }} into
+        # run:/action args (GitHub Actions script injection / lychee-action eval).
+        # BASE_REF is passed via env so branch names cannot inject into the script.
+        if git diff --name-only --diff-filter=d "origin/${BASE_REF}..HEAD" | grep -E '\.(md|html|rst)$' > changed_files.txt; then
           if [ -s changed_files.txt ]; then
-            echo "any_changed=true" >> $GITHUB_OUTPUT
-            echo "changed_files_list=$(cat changed_files.txt | sed 's|^|'"'"'${{ github.workspace }}/|; s|$|'"'"'|' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
+            while IFS= read -r rel; do
+              printf '%s\n' "${GITHUB_WORKSPACE}/${rel}"
+            done < changed_files.txt > changed_files_abs.txt
           else
-            echo "any_changed=false" >> $GITHUB_OUTPUT
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
           fi
         else
-          echo "any_changed=false" >> $GITHUB_OUTPUT
+          echo "any_changed=false" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Echo changed files in the PR
       if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
       run: |
-        echo "Files being checked: ${{ steps.changed-files.outputs.changed_files_list }}"
+        echo "Files being checked:"
+        cat changed_files.txt
 
     # Pass 1: lychee checks everything. It does not fail the job; its failures are
     # written to a JSON report and re-verified in pass 2, because lychee cannot
     # reach some sites that gate on TLS fingerprint (e.g. analog.com behind a WAF).
+    # PR path invokes lychee directly with a file-backed argv list so attacker-
+    # controlled filenames never enter ${{ }} / eval (lychee-action uses eval).
     - name: URL checker (PR - changed files only)
       if: github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
-      uses: lycheeverse/lychee-action@v2
-      with:
-        workingDirectory: .github/workflows
-        format: json
-        output: lychee-report.json
-        jobSummary: false
-        args: >-
-          --accept=200,403,429
-          --max-retries=5
-          --retry-wait-time=2
-          --no-progress
-          --root-dir=${{ github.workspace }}
-          --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2'
-          ${{ steps.changed-files.outputs.changed_files_list }}
-        fail: false
-        failIfEmpty: false
+      env:
+        # lychee uses GITHUB_TOKEN for GitHub API auth / rate limits (same as lychee-action).
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        # Same default version as lycheeverse/lychee-action@v2
+        LYCHEE_VERSION=v0.16.1
+        FILENAME=lychee-x86_64-unknown-linux-gnu.tar.gz
+        curl -sfLO "https://github.com/lycheeverse/lychee/releases/download/lychee-${LYCHEE_VERSION}/${FILENAME}"
+        tar -xzf "${FILENAME}"
+        install -t "$HOME/.local/bin" -D lychee
+        rm -f "${FILENAME}"
+        export PATH="$HOME/.local/bin:$PATH"
+
+        mapfile -t files < changed_files_abs.txt
+        set +e
+        lychee \
+          --accept=200,403,429 \
+          --max-retries=5 \
+          --retry-wait-time=2 \
+          --no-progress \
+          --base="${GITHUB_WORKSPACE}" \
+          --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2' \
+          --format json \
+          --output .github/workflows/lychee-report.json \
+          "${files[@]}"
+        # fail: false — pass 2 re-verifies failures
+        exit 0
 
     - name: URL checker (all files)
       if: github.event_name == 'push'
@@ -70,7 +91,7 @@ jobs:
           --max-retries=5
           --retry-wait-time=2
           --no-progress
-          --root-dir=${{ github.workspace }}
+          --base=${{ github.workspace }}
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2'
           '${{ github.workspace }}/**/*.md'
           '${{ github.workspace }}/**/*.html'
