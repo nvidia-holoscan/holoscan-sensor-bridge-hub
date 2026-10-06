@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Weekly full check of main, to catch links that break without a commit.
+  # Scheduled runs always use the default branch (main).
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
 jobs:
   check-urls:
     runs-on: ubuntu-latest
@@ -54,25 +58,34 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       run: |
         set -euo pipefail
-        # Same default version as lycheeverse/lychee-action@v2
-        LYCHEE_VERSION=v0.16.1
+        # Keep in sync with lycheeVersion in the push job below so both paths
+        # accept the same flags (v0.16.x has no --root-dir). The tarball is checked
+        # against the SHA-256 published with the release and unpacked under
+        # RUNNER_TEMP, never in the checked-out PR tree.
+        LYCHEE_VERSION=v0.24.2
+        LYCHEE_SHA256=1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a
         FILENAME=lychee-x86_64-unknown-linux-gnu.tar.gz
         REPORT=".github/workflows/lychee-report.json"
-        curl -sfLO "https://github.com/lycheeverse/lychee/releases/download/lychee-${LYCHEE_VERSION}/${FILENAME}"
-        tar -xzf "${FILENAME}"
-        install -t "$HOME/.local/bin" -D lychee
-        rm -f "${FILENAME}"
-        export PATH="$HOME/.local/bin:$PATH"
+        LYCHEE_DIR="$(mktemp -d "${RUNNER_TEMP}/lychee.XXXXXX")"
+        curl -sSfL --proto '=https' -o "${LYCHEE_DIR}/${FILENAME}" \
+          "https://github.com/lycheeverse/lychee/releases/download/lychee-${LYCHEE_VERSION}/${FILENAME}"
+        echo "${LYCHEE_SHA256}  ${LYCHEE_DIR}/${FILENAME}" | sha256sum -c -
+        tar -xzf "${LYCHEE_DIR}/${FILENAME}" -C "${LYCHEE_DIR}"
+        LYCHEE="${LYCHEE_DIR}/lychee-x86_64-unknown-linux-gnu/lychee"
+        "${LYCHEE}" --version
 
         mapfile -t files < changed_files_abs.txt
         rm -f "${REPORT}"
         set +e
-        lychee \
+        # --root-dir only resolves root-relative links (/path); relative links
+        # resolve against the file that contains them. Do not use --base, which
+        # resolves every relative link against one directory.
+        "${LYCHEE}" \
           --accept=200,403,429 \
           --max-retries=5 \
           --retry-wait-time=2 \
           --no-progress \
-          --base="${GITHUB_WORKSPACE}" \
+          --root-dir="${GITHUB_WORKSPACE}" \
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2' \
           --format json \
           --output "${REPORT}" \
@@ -87,9 +100,11 @@ jobs:
         exit 0
 
     - name: URL checker (all files)
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'schedule'
       uses: lycheeverse/lychee-action@v2
       with:
+        # Keep in sync with LYCHEE_VERSION in the PR job above.
+        lycheeVersion: v0.24.2
         workingDirectory: .github/workflows
         format: json
         output: lychee-report.json
@@ -99,7 +114,7 @@ jobs:
           --max-retries=5
           --retry-wait-time=2
           --no-progress
-          --base=${{ github.workspace }}
+          --root-dir=${{ github.workspace }}
           --remap='(file://.*)/holoscan-sdk/(.*) https://github.com/nvidia-holoscan/holoscan-sdk/tree/main/$2'
           '${{ github.workspace }}/**/*.md'
           '${{ github.workspace }}/**/*.html'
