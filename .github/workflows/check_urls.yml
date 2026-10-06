@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Weekly full check of main, to catch links that break without a commit.
+  # Scheduled runs always use the default branch (main).
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
 jobs:
   check-urls:
     runs-on: ubuntu-latest
@@ -96,7 +100,7 @@ jobs:
         exit 0
 
     - name: URL checker (all files)
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' || github.event_name == 'schedule'
       uses: lycheeverse/lychee-action@v2
       with:
         # Keep in sync with LYCHEE_VERSION in the PR job above.
