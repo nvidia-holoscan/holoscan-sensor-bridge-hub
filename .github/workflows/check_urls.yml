@@ -130,5 +130,5 @@ jobs:
         python-version: "3.12"
     - name: Re-check lychee failures with browser impersonation
       run: |
-        pip install curl_cffi
+        pip install curl_cffi==0.17.0
         python .github/workflows/scripts/recheck_failed_urls.py .github/workflows/lychee-report.json

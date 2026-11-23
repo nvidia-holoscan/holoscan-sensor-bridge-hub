@@ -15,9 +15,12 @@ jobs:
 
     - name: Check copyright headers (PR - changed files only)
       if: github.event_name == 'pull_request'
+      env:
+        # Passed via env so branch names cannot inject into the shell script.
+        BASE_REF: ${{ github.base_ref }}
       run: |
         echo "Checking copyright headers in changed files..."
-        python3 .github/workflows/scripts/check_copyright.py --git-modified-only origin/${{ github.base_ref }} \
+        python3 .github/workflows/scripts/check_copyright.py --git-modified-only "origin/${BASE_REF}" \
           --exclude-config .github/workflows/scripts/copyright_excludes.txt
         # full check without other code modifications: python3 .github/workflows/scripts/check_copyright.py \
         #  --exclude-config .github/workflows/scripts/copyright_excludes.txt  --ignore-year-mismatch .
