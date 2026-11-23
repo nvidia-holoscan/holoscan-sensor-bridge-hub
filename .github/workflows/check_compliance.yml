@@ -19,6 +19,12 @@ jobs:
         # Passed via env so branch names cannot inject into the shell script.
         BASE_REF: ${{ github.base_ref }}
       run: |
+        # check_copyright.py -> gitutils runs git through shell=True, so restrict
+        # the base branch to a safe character set before it reaches Python.
+        if [[ ! "${BASE_REF}" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+          echo "Refusing to run: unsupported base branch name '${BASE_REF}'"
+          exit 1
+        fi
         echo "Checking copyright headers in changed files..."
         python3 .github/workflows/scripts/check_copyright.py --git-modified-only "origin/${BASE_REF}" \
           --exclude-config .github/workflows/scripts/copyright_excludes.txt
